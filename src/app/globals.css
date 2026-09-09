@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #edf2f8;
+  --foreground: #1e293b;
+}
+
+.dark {
+  --background: #0b0f19;
+  --foreground: #f1f5f9;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* ==============================================================================
+   SYNCHRONIZED THEME TRANSITIONS (RESPONSIVE & FLUID)
+   ============================================================================== */
+body,
+header,
+footer,
+nav,
+main,
+section,
+div.clay-card,
+button.clay-btn-primary,
+button.clay-btn-white,
+button.clay-toggle,
+.clay-card,
+.clay-hero,
+.clay-toggle,
+.clay-pill-active,
+.clay-pill-inactive,
+.clay-input {
+  transition: 
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==============================================================================
+   CLAYMORPHISM DESIGN SYSTEM (DAY & NIGHT)
+   ============================================================================== */
+
+/* 1. CLAY CARDS */
+.clay-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    12px 16px 30px rgba(160, 175, 205, 0.32),
+    -6px -6px 18px rgba(255, 255, 255, 0.95),
+    inset 3px 3px 6px rgba(255, 255, 255, 0.9),
+    inset -4px -4px 8px rgba(175, 190, 215, 0.28);
+}
+
+.dark .clay-card {
+  background: rgba(22, 30, 49, 0.88);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    14px 18px 36px rgba(0, 0, 0, 0.55),
+    -6px -6px 16px rgba(30, 41, 59, 0.25),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.08),
+    inset -3px -3px 8px rgba(0, 0, 0, 0.6);
+}
+
+.clay-card-hover:hover {
+  transform: translateY(-4px);
+}
+
+/* 2. CLAY HERO CONTAINER */
+.clay-hero {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 50%, #6366f1 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    14px 20px 40px rgba(79, 70, 229, 0.35),
+    inset 4px 4px 8px rgba(255, 255, 255, 0.35),
+    inset -4px -4px 10px rgba(30, 27, 75, 0.45);
+}
+
+.dark .clay-hero {
+  background: linear-gradient(135deg, #3730a3 0%, #312e81 50%, #4338ca 100%);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    14px 20px 45px rgba(0, 0, 0, 0.6),
+    inset 3px 3px 6px rgba(255, 255, 255, 0.2),
+    inset -4px -4px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* 3. CLAY BUTTONS */
+.clay-btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    6px 8px 18px rgba(79, 70, 229, 0.38),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.45),
+    inset -3px -3px 6px rgba(30, 27, 75, 0.4);
+}
+
+.clay-btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: 
+    3px 4px 8px rgba(79, 70, 229, 0.3),
+    inset 3px 3px 6px rgba(30, 27, 75, 0.45),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.dark .clay-btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+  box-shadow: 
+    6px 8px 20px rgba(0, 0, 0, 0.45),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+    inset -3px -3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.clay-btn-white {
+  background: #ffffff;
+  color: #312e81;
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    6px 8px 16px rgba(0, 0, 0, 0.12),
+    inset 2px 2px 4px rgba(255, 255, 255, 1),
+    inset -2px -2px 5px rgba(180, 195, 220, 0.35);
+}
+
+.clay-btn-white:active {
+  transform: scale(0.97);
+}
+
+/* 4. CLAY THEME TOGGLE */
+.clay-toggle {
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    5px 6px 14px rgba(160, 175, 200, 0.32),
+    -3px -3px 8px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 4px rgba(165, 180, 205, 0.3);
+}
+
+.dark .clay-toggle {
+  background: #1e293b;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    6px 8px 16px rgba(0, 0, 0, 0.45),
+    -3px -3px 8px rgba(30, 41, 59, 0.2),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.1),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* 5. CLAY PILLS */
+.clay-pill-active {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    5px 7px 16px rgba(79, 70, 229, 0.35),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+    inset -2px -2px 4px rgba(30, 27, 75, 0.4);
+}
+
+.clay-pill-inactive {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    4px 6px 12px rgba(165, 180, 205, 0.25),
+    -2px -2px 6px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 3px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 4px rgba(180, 195, 220, 0.2);
+}
+
+.dark .clay-pill-inactive {
+  background: #1e293b;
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    5px 6px 14px rgba(0, 0, 0, 0.4),
+    inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.08),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* 6. CLAY INSET INPUT */
+.clay-input {
+  background: #eef3f9;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    inset 3px 3px 6px rgba(165, 180, 205, 0.35),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+}
+
+.dark .clay-input {
+  background: #121827;
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    inset 3px 3px 6px rgba(0, 0, 0, 0.55),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.05);
+}
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

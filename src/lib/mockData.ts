@@ -1,0 +1,216 @@
+import { Category, Product } from '@/types/database';
+
+export const mockCategories: Category[] = [
+  {
+    id: 'effc2731-9ad1-4636-8722-b7e846970096',
+    name: 'Dad Corner',
+    slug: 'dad-corner',
+    icon: 'heart',
+    sort_order: 1,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'ecfaca94-e1f0-408e-8c59-c4c7acf95640',
+    name: 'Engineer Corner',
+    slug: 'engineer-corner',
+    icon: 'code',
+    sort_order: 2,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'c95b6aa5-783c-4514-ae7e-2a478a4c796d',
+    name: 'Gamer Corner',
+    slug: 'gamer-corner',
+    icon: 'gamepad',
+    sort_order: 3,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'd0ec2f99-d95b-42ab-b48a-c649b4107a4d',
+    name: 'ASN Corner',
+    slug: 'asn-corner',
+    icon: 'landmark',
+    sort_order: 4,
+    created_at: new Date().toISOString(),
+  },
+];
+
+export const mockProducts: Product[] = [
+  // 1. Kategori: Dad Corner
+  {
+    id: 'a1a1e1a3-20e1-49b5-871e-bd31bfb43398',
+    category_id: 'effc2731-9ad1-4636-8722-b7e846970096',
+    title: 'Financial Blueprint Ayah Muda: Template Dana Pendidikan & Asuransi Anak',
+    slug: 'financial-blueprint-ayah-muda',
+    description: 'Panduan dan spreadsheet otomatis (Excel & Google Sheets) untuk merencanakan dana kelahiran, dana darurat keluarga, tabungan pendidikan berjenjang TK-Kuliah, dan kalkulator asuransi kesehatan keluarga secara realistis.',
+    price: 79000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=800&auto=format&fit=crop&q=60',
+      'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/financial-blueprint-ayah.xlsx',
+    is_active: true,
+    stock_type: 'unlimited',
+    stock_qty: null,
+    sold_count: 128,
+    tags: ['parenting', 'ayah', 'finansial', 'keluarga', 'spreadsheet'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[0],
+  },
+  {
+    id: 'a3a90cb2-949e-4dee-8d22-8443543a5378',
+    category_id: 'effc2731-9ad1-4636-8722-b7e846970096',
+    title: 'Printable Activity Kit 100+ Ide Permainan Berkualitas Ayah & Anak',
+    slug: 'printable-activity-kit-ayah-anak',
+    description: 'Paket printable PDF 120 halaman berisi ide games sensorik, bonding akhir pekan, puzzle kreatif, dan checklist petualangan outdoor yang mudah dipraktekkan ayah sibuk bersama anak usia 2-7 tahun tanpa screen-time berlebih.',
+    price: 49000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/activity-kit-ayah-anak.pdf',
+    is_active: true,
+    stock_type: 'unlimited',
+    stock_qty: null,
+    sold_count: 94,
+    tags: ['anak', 'bonding', 'printable', 'parenting'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[0],
+  },
+
+  // 2. Kategori: Engineer Corner
+  {
+    id: 'dff38f7d-f955-42c9-a7f5-972d5fc28bf6',
+    category_id: 'ecfaca94-e1f0-408e-8c59-c4c7acf95640',
+    title: 'Production-Ready SaaS Boilerplate Next.js 15, Supabase & Midtrans',
+    slug: 'production-saas-boilerplate-nextjs-midtrans',
+    description: 'Starter kit full-stack lengkap dengan arsitektur App Router, Supabase Auth & Storage, integrasi webhook Midtrans terverifikasi, Tailwind CSS, komponen UI modular, dan skema PostgreSQL siap deploy ke Vercel.',
+    price: 149000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=60',
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/saas-boilerplate-source.zip',
+    is_active: true,
+    stock_type: 'unlimited',
+    stock_qty: null,
+    sold_count: 215,
+    tags: ['nextjs', 'typescript', 'supabase', 'midtrans', 'source-code'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[1],
+  },
+  {
+    id: '2c8977b6-4492-482b-a0de-8993dee24173',
+    category_id: 'ecfaca94-e1f0-408e-8c59-c4c7acf95640',
+    title: 'System Design & High-Performance Web Architecture Playbook',
+    slug: 'system-design-architecture-playbook',
+    description: 'Dokumen panduan arsitektur sistem berbasis studi kasus nyata: Caching strategies, Database indexing & sharding, Microservices vs Modular Monolith, serta diagram draw.io siap pakai untuk persiapan tech interview atau proyek skala besar.',
+    price: 89000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/system-design-playbook.pdf',
+    is_active: true,
+    stock_type: 'limited',
+    stock_qty: 25,
+    sold_count: 76,
+    tags: ['system-design', 'backend', 'architecture', 'engineer'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[1],
+  },
+
+  // 3. Kategori: Gamer Corner
+  {
+    id: '5b7b2e72-23f9-4d7d-8db1-f02c91ece1c3',
+    category_id: 'c95b6aa5-783c-4514-ae7e-2a478a4c796d',
+    title: 'Ultimate Notion Game Backlog & Completionist Tracker 2026',
+    slug: 'notion-game-backlog-tracker',
+    description: 'Template Notion interaktif all-in-one untuk melacak daftar game yang ingin dimainkan (backlog), status tamat (completionist/trophy hunter), review rating pribadi, dan statistik waktu main per platform (Steam, PS5, Switch, Xbox).',
+    price: 39000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/notion-gamer-template.pdf',
+    is_active: true,
+    stock_type: 'unlimited',
+    stock_qty: null,
+    sold_count: 88,
+    tags: ['gaming', 'notion', 'backlog', 'tracker', 'steam'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[2],
+  },
+  {
+    id: 'f93a5393-ce05-4c89-89b3-fb8e3ad0ec23',
+    category_id: 'c95b6aa5-783c-4514-ae7e-2a478a4c796d',
+    title: 'Preset Optimasi TDP & Graphic Profiles Steam Deck / ROG Ally',
+    slug: 'preset-optimasi-handheld-pc',
+    description: 'Panduan dan file konfigurasi config game AAA populer (Cyberpunk, Elden Ring, Black Myth Wukong, dll) untuk memaksimalkan daya tahan baterai hingga 4+ jam dengan framerate stabil 40-45 FPS pada handheld gaming.',
+    price: 45000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/handheld-optimization-presets.zip',
+    is_active: true,
+    stock_type: 'limited',
+    stock_qty: 15,
+    sold_count: 42,
+    tags: ['steamdeck', 'rogally', 'handheld', 'config', 'gaming'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[2],
+  },
+
+  // 4. Kategori: ASN Corner
+  {
+    id: '248d1469-a474-4488-9f88-a6075bdebd0b',
+    category_id: 'd0ec2f99-d95b-42ab-b48a-c649b4107a4d',
+    title: 'Kit Taktis Sukses Tes SKD CPNS/PPPK: Modul Penalaran & Trik Cepat',
+    slug: 'kit-taktis-sukses-skd-cpns-pppk',
+    description: 'Ringkasan materi inti TWK, TIU, dan TKP berorientasi HOTS (Higher Order Thinking Skills). Dilengkapi rumus praktis hitung cepat TIU, latihan penalaran analogi, serta strategi manajemen waktu ujian CAT dari pengalaman nyata.',
+    price: 69000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/modul-skd-cpns-taktis.pdf',
+    is_active: true,
+    stock_type: 'unlimited',
+    stock_qty: null,
+    sold_count: 340,
+    tags: ['asn', 'cpns', 'pppk', 'skd', 'karir'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[3],
+  },
+  {
+    id: '335cc031-3467-4660-96c3-e0fbcc840f55',
+    category_id: 'd0ec2f99-d95b-42ab-b48a-c649b4107a4d',
+    title: 'Template Otomasi Laporan Kinerja & SKP ASN Berbasis Excel Macro',
+    slug: 'template-otomasi-skp-laporan-asn',
+    description: 'Template Excel praktis dengan formula otomatis untuk menyusun logbook kinerja harian, rekap eviden tugas dinas, dan draft Sasaran Kinerja Pegawai (SKP) sesuai regulasi PermenPAN-RB terbaru tanpa repot hitung manual.',
+    price: 59000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=60',
+    preview_images: [
+      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=60'
+    ],
+    file_path: 'products/template-skp-asn-otomatis.xlsx',
+    is_active: true,
+    stock_type: 'limited',
+    stock_qty: 30,
+    sold_count: 112,
+    tags: ['asn', 'skp', 'pemerintahan', 'excel', 'administrasi'],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: mockCategories[3],
+  },
+];
