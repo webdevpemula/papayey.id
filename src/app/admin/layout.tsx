@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Package, FolderTree, ShoppingCart, LogOut, ArrowLeft } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import { createClient } from '@/lib/supabase/client';
 
 export default function AdminLayout({
@@ -29,10 +29,10 @@ export default function AdminLayout({
   };
 
   const navs = [
-    { label: 'Ringkasan', href: '/admin', icon: LayoutDashboard },
-    { label: 'Produk Digital', href: '/admin/produk', icon: Package },
-    { label: 'Kategori', href: '/admin/kategori', icon: FolderTree },
-    { label: 'Order Transaksi', href: '/admin/order', icon: ShoppingCart },
+    { label: 'Ringkasan', href: '/admin', icon: 'chart-simple' },
+    { label: 'Produk Digital', href: '/admin/produk', icon: 'box-archive' },
+    { label: 'Kategori', href: '/admin/kategori', icon: 'folder-tree' },
+    { label: 'Order Transaksi', href: '/admin/order', icon: 'cart-shopping' },
   ];
 
   return (
@@ -56,13 +56,12 @@ export default function AdminLayout({
             </div>
           </div>
           <Link href="/" className="text-xs text-slate-400 hover:text-indigo-600 flex items-center gap-1">
-            <ArrowLeft className="h-3 w-3" /> Toko
+            <FaIcon name="arrow-left" className="text-[10px]" /> Toko
           </Link>
         </div>
 
         <nav className="mt-6 space-y-1">
           {navs.map((item) => {
-            const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
               <Link
@@ -74,7 +73,7 @@ export default function AdminLayout({
                     : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800'
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <FaIcon name={item.icon} className="text-sm" />
                 {item.label}
               </Link>
             );
@@ -86,7 +85,7 @@ export default function AdminLayout({
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
           >
-            <LogOut className="h-4 w-4" />
+            <FaIcon name="arrow-left-from-bracket" className="text-sm" />
             Keluar (Logout)
           </button>
         </div>

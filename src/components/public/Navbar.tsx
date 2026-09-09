@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Search, ShoppingBag, ShieldCheck, ReceiptText } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import { ThemeToggle } from './ThemeToggle';
 
 export function Navbar() {
@@ -47,7 +47,7 @@ export function Navbar() {
         {/* Clay Search Bar */}
         <form onSubmit={handleSearch} className="hidden sm:flex flex-1 max-w-md mx-4">
           <div className="relative w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <FaIcon name="magnifying-glass" className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400" />
             <input
               type="text"
               placeholder="Cari blueprint, template, panduan..."
@@ -65,7 +65,7 @@ export function Navbar() {
             className="sm:hidden clay-toggle flex h-10 w-10 items-center justify-center rounded-2xl text-slate-600 dark:text-slate-300"
             aria-label="Cari produk"
           >
-            <Search className="h-4 w-4" />
+            <FaIcon name="magnifying-glass" className="text-sm" />
           </Link>
 
           {/* Day & Night Theme Toggle Switch */}
@@ -75,7 +75,7 @@ export function Navbar() {
             href="/order/cek"
             className="clay-btn-secondary inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all active:scale-95"
           >
-            <ReceiptText className="h-4 w-4 text-indigo-500" />
+            <FaIcon name="newspaper" className="text-sm text-indigo-500" />
             <span className="hidden sm:inline">Cek</span> Order
           </Link>
 
@@ -83,7 +83,7 @@ export function Navbar() {
             href="/admin"
             className="hidden md:inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors px-2 py-1"
           >
-            <ShieldCheck className="h-3.5 w-3.5" />
+            <FaIcon name="shield" className="text-xs" />
             Admin
           </Link>
         </div>

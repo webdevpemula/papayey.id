@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ReceiptText, Search, ArrowRight } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export default function CheckOrderPage() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function CheckOrderPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center space-y-6">
       <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
-        <ReceiptText className="h-7 w-7" />
+        <FaIcon name="newspaper" className="text-3xl" />
       </div>
 
       <div className="space-y-2">
@@ -43,7 +43,7 @@ export default function CheckOrderPage() {
           className="w-full flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3.5 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-700 active:scale-95 transition-all"
         >
           Cek Status Sekarang
-          <ArrowRight className="h-4 w-4" />
+          <FaIcon name="arrow-right" className="text-sm" />
         </button>
       </form>
     </div>

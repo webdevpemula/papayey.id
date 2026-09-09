@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ShieldCheck, Lock, Mail, Loader2, ArrowLeft } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
               Email Owner
             </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <FaIcon name="envelope" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400" />
               <input
                 type="email"
                 required
@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
               Kata Sandi
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <FaIcon name="lock" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400" />
               <input
                 type="password"
                 required
@@ -102,13 +102,13 @@ export default function AdminLoginPage() {
             disabled={loading}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 text-xs font-bold text-white shadow-md hover:bg-indigo-700 disabled:opacity-50 transition-all"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Masuk Dashboard'}
+            {loading ? <FaIcon name="arrows-rotate" spin className="text-sm" /> : 'Masuk Dashboard'}
           </button>
         </form>
 
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-indigo-600 transition-colors">
-            <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Halaman Toko
+            <FaIcon name="arrow-left" className="text-xs" /> Kembali ke Halaman Toko
           </Link>
         </div>
 

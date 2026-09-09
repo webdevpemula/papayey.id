@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -56,17 +56,21 @@ export function ThemeToggle() {
       aria-label="Ganti mode terang / gelap"
       className="clay-toggle relative flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-2xl transition-all duration-200 hover:scale-105 active:scale-90 select-none"
     >
-      <div className="relative h-5 w-5 pointer-events-none">
-        <Sun
-          className={`absolute inset-0 h-5 w-5 text-amber-500 transition-all duration-200 ease-out ${
+      <div className="relative h-5 w-5 pointer-events-none flex items-center justify-center">
+        <span
+          className={`absolute inset-0 flex items-center justify-center text-amber-500 transition-all duration-200 ease-out ${
             isDark ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
           }`}
-        />
-        <Moon
-          className={`absolute inset-0 h-5 w-5 text-indigo-300 transition-all duration-200 ease-out ${
+        >
+          <FaIcon name="sun" className="text-base" />
+        </span>
+        <span
+          className={`absolute inset-0 flex items-center justify-center text-indigo-300 transition-all duration-200 ease-out ${
             isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
           }`}
-        />
+        >
+          <FaIcon name="moon" className="text-base" />
+        </span>
       </div>
     </button>
   );

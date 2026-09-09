@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyMidtransSignature } from '@/lib/midtrans';
@@ -107,21 +107,26 @@ export async function POST(req: NextRequest) {
         await supabase.from('products').update(updates).eq('id', order.product.id);
       }
 
-      // Kirim email notifikasi download secara asinkron (non-blocking) agar respons webhook Midtrans instan (<100ms)
-      sendDownloadEmail({
-        buyerEmail: order.buyer_email,
-        buyerName: order.buyer_name,
-        productTitle: order.product?.title || 'Produk Digital',
-        orderCode: order.order_code,
-        downloadToken: downloadToken,
-        expiresAt: expiresAt,
-      }).then(async (emailResult) => {
+      // Kirim email notifikasi unduhan
+      try {
+        const emailResult = await sendDownloadEmail({
+          buyerEmail: order.buyer_email,
+          buyerName: order.buyer_name,
+          productTitle: order.product?.title || 'Produk Digital',
+          orderCode: order.order_code,
+          downloadToken: downloadToken,
+          expiresAt: expiresAt,
+        });
+
         if (emailResult.success) {
           await supabase.from('orders').update({ email_sent: true }).eq('id', order.id);
+          console.log(`✅ Email sent successfully to ${order.buyer_email} for order ${order.order_code}`);
+        } else {
+          console.error(`⚠️ Email sending failed: ${emailResult.error}`);
         }
-      }).catch((emailErr) => {
-        console.error('Non-blocking email delivery warning:', emailErr);
-      });
+      } catch (emailErr) {
+        console.error('Non-blocking email delivery error:', emailErr);
+      }
 
     } else {
       // Update non-paid status (failed / expired / pending)
@@ -136,9 +141,9 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(`✅ Midtrans webhook processed: ${orderId} -> ${newStatus}`);
-    return NextResponse.json({ status: 'OK', new_status: newStatus });
+    return NextResponse.json({ message: 'Webhook processed successfully' });
   } catch (error: any) {
-    console.error('Midtrans Webhook Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Webhook error:', error);
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }

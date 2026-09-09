@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { formatRupiah, formatDate } from '@/lib/utils';
-import { DollarSign, ShoppingBag, Clock, CheckCircle2, PackagePlus, ArrowUpRight } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export const revalidate = 0; // Dynamic dashboard
 
@@ -49,7 +49,7 @@ export default async function AdminDashboardPage() {
           href="/admin/produk/baru"
           className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-indigo-700 transition-all self-start"
         >
-          <PackagePlus className="h-4 w-4" />
+          <FaIcon name="plus" className="text-xs" />
           Tambah Produk Baru
         </Link>
       </div>
@@ -59,7 +59,7 @@ export default async function AdminDashboardPage() {
         
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
-            <DollarSign className="h-6 w-6" />
+            <FaIcon name="newspaper" className="text-xl" />
           </div>
           <div>
             <p className="text-xs font-medium text-slate-400">Total Omzet</p>
@@ -69,7 +69,7 @@ export default async function AdminDashboardPage() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
-            <CheckCircle2 className="h-6 w-6" />
+            <FaIcon name="circle-check" className="text-xl" />
           </div>
           <div>
             <p className="text-xs font-medium text-slate-400">Order Berhasil (Paid)</p>
@@ -79,7 +79,7 @@ export default async function AdminDashboardPage() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
-            <Clock className="h-6 w-6" />
+            <FaIcon name="clock" className="text-xl" />
           </div>
           <div>
             <p className="text-xs font-medium text-slate-400">Order Pending</p>
@@ -89,7 +89,7 @@ export default async function AdminDashboardPage() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-400">
-            <ShoppingBag className="h-6 w-6" />
+            <FaIcon name="box-archive" className="text-xl" />
           </div>
           <div>
             <p className="text-xs font-medium text-slate-400">Koleksi Produk</p>
@@ -104,7 +104,7 @@ export default async function AdminDashboardPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-slate-900 dark:text-white">Transaksi Terbaru</h2>
           <Link href="/admin/order" className="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
-            Lihat Semua <ArrowUpRight className="h-3.5 w-3.5" />
+            Lihat Semua <FaIcon name="arrow-up-right-from-square" className="text-xs" />
           </Link>
         </div>
 

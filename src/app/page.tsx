@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { mockCategories, mockProducts } from '@/lib/mockData';
@@ -6,7 +6,7 @@ import { CategoryPills } from '@/components/public/CategoryPills';
 import { ProductCard } from '@/components/public/ProductCard';
 import { AdBanner } from '@/components/public/AdBanner';
 import { HeroSlider } from '@/components/public/HeroSlider';
-import { Flame } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import { Product, Category } from '@/types/database';
 
 export const revalidate = 60;
@@ -54,7 +54,7 @@ export default async function HomePage() {
       <section className="space-y-5">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500 dark:bg-rose-500/20">
-            <Flame className="h-5 w-5 fill-rose-500" />
+            <FaIcon name="fire" className="text-base text-rose-500" />
           </div>
           <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">Paling Banyak Diunduh</h2>
         </div>

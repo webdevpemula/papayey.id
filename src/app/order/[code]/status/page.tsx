@@ -3,7 +3,7 @@
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { formatRupiah, formatDate } from '@/lib/utils';
-import { CheckCircle2, Clock, XCircle, AlertCircle, Download, RefreshCw, ArrowRight } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 interface OrderStatusData {
   order_code: string;
@@ -90,7 +90,7 @@ export default function OrderStatusPage({
   if (loading) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center space-y-4">
-        <RefreshCw className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
+        <div className="mx-auto flex items-center justify-center"><FaIcon name="arrows-rotate" spin className="text-3xl text-indigo-600" /></div>
         <p className="text-xs text-slate-500">Memeriksa status pembayaran #{code}...</p>
       </div>
     );
@@ -99,7 +99,7 @@ export default function OrderStatusPage({
   if (!data) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center space-y-4">
-        <AlertCircle className="h-12 w-12 text-rose-500 mx-auto" />
+        <div className="mx-auto flex items-center justify-center"><FaIcon name="triangle-exclamation" className="text-5xl text-rose-500" /></div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pesanan Tidak Ditemukan</h2>
         <p className="text-xs text-slate-500">Nomor pesanan #{code} tidak tercatat di sistem.</p>
         <Link href="/" className="inline-block text-xs font-bold text-indigo-600 hover:underline">
@@ -122,7 +122,7 @@ export default function OrderStatusPage({
         {isPaid && (
           <>
             <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
-              <CheckCircle2 className="h-10 w-10" />
+              <FaIcon name="circle-check" className="text-4xl" />
             </div>
             <div className="space-y-1">
               <h1 className="text-2xl font-black text-slate-900 dark:text-white">Pembayaran Berhasil!</h1>
@@ -134,7 +134,7 @@ export default function OrderStatusPage({
         {isPending && (
           <>
             <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 animate-pulse">
-              <Clock className="h-10 w-10" />
+              <FaIcon name="clock" className="text-4xl" />
             </div>
             <div className="space-y-1">
               <h1 className="text-2xl font-black text-slate-900 dark:text-white">Menunggu Pembayaran</h1>
@@ -143,7 +143,7 @@ export default function OrderStatusPage({
               </p>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-              <RefreshCw className="h-3 w-3 animate-spin text-indigo-600" />
+              <FaIcon name="arrows-rotate" spin className="text-xs text-indigo-600" />
               Sistem sedang memeriksa status otomatis...
             </div>
           </>
@@ -152,7 +152,7 @@ export default function OrderStatusPage({
         {isFailed && (
           <>
             <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
-              <XCircle className="h-10 w-10" />
+              <FaIcon name="circle-xmark" className="text-4xl" />
             </div>
             <div className="space-y-1">
               <h1 className="text-2xl font-black text-slate-900 dark:text-white">
@@ -197,7 +197,7 @@ export default function OrderStatusPage({
             href={`/download/${data.download_token}`}
             className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 active:scale-[0.98] transition-all"
           >
-            <Download className="h-5 w-5" />
+            <FaIcon name="arrow-down-to-line" className="text-base" />
             Akses & Unduh Produk Sekarang
           </Link>
         )}
@@ -208,7 +208,7 @@ export default function OrderStatusPage({
             className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3.5 px-6 text-sm font-bold text-white shadow-md hover:bg-indigo-700 transition-all"
           >
             Pesan Ulang Produk
-            <ArrowRight className="h-4 w-4" />
+            <FaIcon name="arrow-right" className="text-sm" />
           </Link>
         )}
 

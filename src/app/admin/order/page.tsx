@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { formatRupiah, formatDate } from '@/lib/utils';
 import { Order } from '@/types/database';
-import { Loader2 } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -62,7 +62,7 @@ export default function AdminOrdersPage() {
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm dark:border-slate-800 dark:bg-slate-900">
         {loading ? (
           <div className="p-12 text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
+            <div className="mx-auto flex items-center justify-center"><FaIcon name="arrows-rotate" spin className="text-3xl text-indigo-600" /></div>
           </div>
         ) : orders.length === 0 ? (
           <p className="p-8 text-center text-xs text-slate-400">Tidak ada order pada filter ini.</p>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { formatRupiah, formatDate } from '@/lib/utils';
 import { Order } from '@/types/database';
-import { ArrowLeft, RefreshCw, Send, AlertTriangle, Loader2 } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export default function AdminOrderDetailPage({
   params,
@@ -87,7 +87,7 @@ export default function AdminOrderDetailPage({
   };
 
   if (loading) {
-    return <div className="p-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" /></div>;
+    return <div className="p-12 text-center"><div className="mx-auto flex items-center justify-center"><FaIcon name="arrows-rotate" spin className="text-3xl text-indigo-600" /></div></div>;
   }
 
   if (!order) {
@@ -102,7 +102,7 @@ export default function AdminOrderDetailPage({
   return (
     <div className="max-w-3xl space-y-6">
       <Link href="/admin/order" className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors">
-        <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Daftar Order
+        <FaIcon name="arrow-left" className="text-xs" /> Kembali ke Daftar Order
       </Link>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -178,7 +178,7 @@ export default function AdminOrderDetailPage({
             disabled={actionLoading}
             className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition-colors"
           >
-            <RefreshCw className="h-4 w-4 text-indigo-600" />
+            <FaIcon name="arrows-rotate" className="text-sm text-indigo-600" />
             Cek Status Midtrans Manual
           </button>
 
@@ -187,7 +187,7 @@ export default function AdminOrderDetailPage({
             disabled={actionLoading}
             className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition-colors"
           >
-            <Send className="h-4 w-4 text-emerald-600" />
+            <FaIcon name="paper-plane" className="text-sm text-emerald-600" />
             Kirim Ulang Link Download Email
           </button>
 
@@ -197,7 +197,7 @@ export default function AdminOrderDetailPage({
               disabled={actionLoading}
               className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-bold text-rose-700 hover:bg-rose-100 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300 transition-colors"
             >
-              <AlertTriangle className="h-4 w-4" />
+              <FaIcon name="triangle-exclamation" className="text-sm" />
               Set Refund Manual
             </button>
           )}

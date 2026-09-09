@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+﻿import { Resend } from 'resend';
 
 interface SendDownloadEmailParams {
   buyerEmail: string;
@@ -23,7 +23,7 @@ export async function sendDownloadEmail(params: SendDownloadEmailParams): Promis
     const resend = new Resend(apiKey);
     const fromAddress = process.env.EMAIL_FROM || 'papayey.id <onboarding@resend.dev>';
 
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: fromAddress,
       to: params.buyerEmail,
       subject: `Akses Unduhan Produk: ${params.productTitle} (${params.orderCode})`,
@@ -54,6 +54,11 @@ export async function sendDownloadEmail(params: SendDownloadEmailParams): Promis
         </div>
       `,
     });
+
+    if (error) {
+      console.error('Resend returned error:', error);
+      return { success: false, error: error.message };
+    }
 
     return { success: true };
   } catch (error: any) {

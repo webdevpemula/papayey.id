@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { mockProducts } from '@/lib/mockData';
 import { StickyBuyBar } from '@/components/public/StickyBuyBar';
 import { formatRupiah } from '@/lib/utils';
-import { Download, ShieldCheck, Zap, ChevronRight, CheckCircle2, AlertCircle, ShoppingCart } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import { Product } from '@/types/database';
 
 export const revalidate = 60;
@@ -49,13 +49,13 @@ export default async function ProductDetailPage({
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-6">
         <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <FaIcon name="arrow-right" className="text-xs" />
         {product.category && (
           <>
             <Link href={`/kategori/${product.category.slug}`} className="hover:text-indigo-600 transition-colors">
               {product.category.name}
             </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
+            <FaIcon name="arrow-right" className="text-xs" />
           </>
         )}
         <span className="font-semibold text-slate-900 dark:text-white line-clamp-1">{product.title}</span>
@@ -126,7 +126,7 @@ export default async function ProductDetailPage({
                 <span>{product.sold_count} terjual</span>
                 <span>•</span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Siap Unduh Instan
+                  <FaIcon name="check" className="text-xs" /> Siap Unduh Instan
                 </span>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default async function ProductDetailPage({
                   href={`/checkout?productId=${product.id}`}
                   className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 active:scale-[0.98] transition-all"
                 >
-                  <ShoppingCart className="h-5 w-5" />
+                  <FaIcon name="cart-shopping" className="text-base" />
                   Beli Sekarang (Akses Instan)
                 </Link>
               ) : (
@@ -166,7 +166,7 @@ export default async function ProductDetailPage({
                   disabled
                   className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-200 py-4 px-6 text-sm font-bold text-slate-400 cursor-not-allowed dark:bg-slate-800"
                 >
-                  <AlertCircle className="h-5 w-5" />
+                  <FaIcon name="triangle-exclamation" className="text-base" />
                   Produk Tidak Tersedia / Stok Habis
                 </button>
               )}
@@ -175,15 +175,15 @@ export default async function ProductDetailPage({
             {/* Guarantees */}
             <div className="border-t border-slate-100 pt-5 dark:border-slate-800 space-y-3 text-xs text-slate-500">
               <div className="flex items-center gap-2.5">
-                <Download className="h-4 w-4 text-indigo-600" />
+                <FaIcon name="arrow-down-to-line" className="text-sm text-indigo-600" />
                 <span>Link unduhan langsung tampil setelah pembayaran sukses</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                <FaIcon name="shield" className="text-sm text-emerald-600" />
                 <span>Pembayaran otomatis terverifikasi via Midtrans (QRIS/VA)</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <Zap className="h-4 w-4 text-amber-500" />
+                <FaIcon name="bolt" className="text-sm text-amber-500" />
                 <span>Cadangan link unduh dikirimkan ke email Anda</span>
               </div>
             </div>

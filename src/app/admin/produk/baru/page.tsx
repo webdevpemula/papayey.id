@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { slugify } from '@/lib/utils';
 import { mockCategories } from '@/lib/mockData';
 import { Category } from '@/types/database';
-import { ArrowLeft, Loader2, Save, FileBox, Link as LinkIcon, Info } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export default function AdminNewProductPage() {
   const router = useRouter();
@@ -88,7 +88,7 @@ export default function AdminNewProductPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-12">
       <Link href="/admin/produk" className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors">
-        <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Daftar Produk
+        <FaIcon name="arrow-left" className="text-xs" /> Kembali ke Daftar Produk
       </Link>
 
       <div className="space-y-1">
@@ -178,7 +178,7 @@ export default function AdminNewProductPage() {
         {/* 6. ASET PRODUK DIGITAL YANG DITERIMA PEMBELI (KUNCI PENGIRIMAN) */}
         <div className="rounded-2xl border border-indigo-200/80 bg-indigo-50/50 p-5 dark:border-indigo-900/50 dark:bg-indigo-950/30 space-y-4">
           <div className="flex items-start gap-2.5">
-            <Info className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+            <FaIcon name="circle-info" className="text-sm text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
             <div>
               <h4 className="text-xs font-bold text-slate-900 dark:text-white">Aset Digital yang Muncul Setelah Pembeli Membayar</h4>
               <p className="text-[11px] text-slate-500">
@@ -198,7 +198,7 @@ export default function AdminNewProductPage() {
                   : 'bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300'
               }`}
             >
-              <FileBox className="h-4 w-4" /> Berkas / File Unduhan
+              <FaIcon name="box-archive" className="text-xs" /> Berkas / File Unduhan
             </button>
             <button
               type="button"
@@ -209,7 +209,7 @@ export default function AdminNewProductPage() {
                   : 'bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300'
               }`}
             >
-              <LinkIcon className="h-4 w-4" /> Tautan Akses Langsung
+              <FaIcon name="arrow-up-right-from-square" className="text-xs" /> Tautan Akses Langsung
             </button>
           </div>
 
@@ -286,7 +286,7 @@ export default function AdminNewProductPage() {
           disabled={loading}
           className="clay-btn-primary flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-bold text-white shadow-md disabled:opacity-50 transition-all active:scale-95"
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {loading ? <FaIcon name="arrows-rotate" spin className="text-sm" /> : <FaIcon name="check" className="text-sm" />}
           Simpan Produk & Terbitkan
         </button>
       </form>

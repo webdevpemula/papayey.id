@@ -3,17 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { mockCategories, mockProducts } from '@/lib/mockData';
 import { ProductCard } from '@/components/public/ProductCard';
-import { 
-  Search, 
-  ChevronRight, 
-  Filter, 
-  Sparkles, 
-  Heart, 
-  Code2, 
-  Gamepad2, 
-  Landmark,
-  X
-} from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import { Product, Category } from '@/types/database';
 
 export const revalidate = 60;
@@ -58,31 +48,28 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       }
     }
 
-    // 2. Query Products with filters
+    // 2. Query Products
     let query = supabase
       .from('products')
       .select('*, category:categories(*)')
       .eq('is_active', true);
 
-    // Filter by corner / category
     if (selectedCategory) {
       query = query.eq('category_id', selectedCategory.id);
     }
 
-    // Search keyword
-    if (q.trim()) {
-      query = query.or(`title.ilike.%${q.trim()}%,description.ilike.%${q.trim()}%`);
+    if (q) {
+      query = query.ilike('title', `%${q}%`);
     }
 
-    // Sorting
-    if (sort === 'price_asc') {
+    if (sort === 'newest') {
+      query = query.order('created_at', { ascending: false });
+    } else if (sort === 'price_asc') {
       query = query.order('price', { ascending: true });
     } else if (sort === 'price_desc') {
       query = query.order('price', { ascending: false });
-    } else if (sort === 'newest') {
-      query = query.order('created_at', { ascending: false });
     } else {
-      // default: popular
+      // Default: Most Popular
       query = query.order('sold_count', { ascending: false });
     }
 
@@ -90,59 +77,56 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     if (prodData && prodData.length > 0) {
       products = prodData;
     } else {
-      // Fallback filtering on mockProducts
+      // Fallback filter on starter mock
       let filtered = [...mockProducts];
       if (selectedCategory) {
-        filtered = filtered.filter((p) => p.category_id === selectedCategory!.id || p.category?.slug === corner);
+        filtered = filtered.filter((p) => p.category_id === selectedCategory!.id);
       }
-      if (q.trim()) {
-        const term = q.trim().toLowerCase();
-        filtered = filtered.filter(
-          (p) => p.title.toLowerCase().includes(term) || p.description.toLowerCase().includes(term)
+      if (q) {
+        const lowerQ = q.toLowerCase();
+        filtered = filtered.filter((p) =>
+          p.title.toLowerCase().includes(lowerQ) ||
+          (p.description && p.description.toLowerCase().includes(lowerQ))
         );
       }
-      if (sort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
-      else if (sort === 'price_desc') filtered.sort((a, b) => b.price - a.price);
-      else if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      else filtered.sort((a, b) => b.sold_count - a.sold_count);
 
+      if (sort === 'newest') {
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      } else if (sort === 'price_asc') {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (sort === 'price_desc') {
+        filtered.sort((a, b) => b.price - a.price);
+      } else {
+        filtered.sort((a, b) => b.sold_count - a.sold_count);
+      }
       products = filtered;
     }
   } catch (err) {
-    let filtered = [...mockProducts];
-    if (corner && corner !== 'semua') {
-      filtered = filtered.filter((p) => p.category?.slug === corner);
-    }
-    if (q.trim()) {
-      const term = q.trim().toLowerCase();
-      filtered = filtered.filter(
-        (p) => p.title.toLowerCase().includes(term) || p.description.toLowerCase().includes(term)
-      );
-    }
-    products = filtered;
+    products = mockProducts;
   }
 
-  const getIcon = (iconName: string | null) => {
+  const getFaIconName = (iconName: string | null) => {
     switch (iconName) {
       case 'heart':
       case 'ayah':
       case 'dad':
       case 'dad-corner':
-        return Heart;
+        return 'heart';
       case 'code':
       case 'engineer':
       case 'engineer-corner':
-        return Code2;
+        return 'code';
       case 'gamepad':
       case 'gamer':
       case 'gamer-corner':
-        return Gamepad2;
+        return 'gamepad';
       case 'landmark':
       case 'asn':
       case 'asn-corner':
-        return Landmark;
+      case 'briefcase':
+        return 'landmark';
       default:
-        return Sparkles;
+        return 'wand-magic-sparkles';
     }
   };
 
@@ -154,7 +138,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-slate-500">
         <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <FaIcon name="arrow-right" className="text-xs" />
         <span className="font-semibold text-slate-900 dark:text-white">Koleksi Lengkap & Pencarian</span>
       </nav>
 
@@ -175,7 +159,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           {sort && sort !== 'popular' && (
             <input type="hidden" name="sort" value={sort} />
           )}
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <FaIcon name="magnifying-glass" className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400" />
           <input
             type="text"
             name="q"
@@ -203,7 +187,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               href="/cari"
               className="inline-flex items-center gap-1 text-xs font-bold text-rose-500 hover:underline"
             >
-              <X className="h-3.5 w-3.5" /> Reset Filter
+              ✕ Reset Filter
             </Link>
           )}
         </div>
@@ -221,13 +205,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 isAllCorners ? 'clay-pill-active' : 'clay-pill-inactive hover:scale-[1.02]'
               }`}
             >
-              <Sparkles className="h-4 w-4" />
+              <FaIcon name="wand-magic-sparkles" className="text-sm" />
               Semua Corner
             </Link>
 
             {/* Pills for each Corner */}
             {categories.map((cat) => {
-              const IconComponent = getIcon(cat.icon);
+              const iconName = getFaIconName(cat.icon);
               const isActive = corner === cat.slug;
               const params = new URLSearchParams({
                 corner: cat.slug,
@@ -243,7 +227,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     isActive ? 'clay-pill-active' : 'clay-pill-inactive hover:scale-[1.02]'
                   }`}
                 >
-                  <IconComponent className="h-4 w-4" />
+                  <FaIcon name={iconName} className="text-sm" />
                   {cat.name}
                 </Link>
               );
@@ -274,7 +258,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {/* Sorting Dropdown */}
         <div className="flex items-center gap-2 self-end sm:self-auto">
-          <Filter className="h-4 w-4 text-slate-400" />
+          <FaIcon name="arrow-down-wide-short" className="text-sm text-slate-400" />
           <form method="GET" action="/cari" className="flex items-center gap-2">
             {corner && corner !== 'semua' && (
               <input type="hidden" name="corner" value={corner} />

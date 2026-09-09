@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { formatRupiah } from '@/lib/utils';
-import { ShoppingCart } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 interface StickyBuyBarProps {
   productId: string;
@@ -27,7 +27,7 @@ export function StickyBuyBar({ productId, price, isAvailable }: StickyBuyBarProp
             href={`/checkout?productId=${productId}`}
             className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 active:scale-95 transition-all"
           >
-            <ShoppingCart className="h-4 w-4" />
+            <FaIcon name="cart-shopping" className="text-sm" />
             Beli Sekarang
           </Link>
         ) : (

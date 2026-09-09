@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { formatRupiah } from '@/lib/utils';
 import { mockProducts } from '@/lib/mockData';
 import { Product } from '@/types/database';
-import { ShoppingCart, ShieldCheck, ArrowLeft, Loader2, Lock, AlertCircle } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 const checkoutFormSchema = z.object({
   buyerEmail: z.string().email('Masukkan alamat email yang valid untuk pengiriman file'),
@@ -137,7 +137,7 @@ function CheckoutContent() {
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <FaIcon name="arrows-rotate" spin className="text-3xl text-indigo-600" />
       </div>
     );
   }
@@ -145,7 +145,7 @@ function CheckoutContent() {
   if (!product) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center space-y-4">
-        <AlertCircle className="h-12 w-12 text-rose-500 mx-auto" />
+        <div className="mx-auto flex items-center justify-center"><FaIcon name="triangle-exclamation" className="text-5xl text-rose-500" /></div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-white">Produk Tidak Ditemukan</h2>
         <p className="text-xs text-slate-500">Pilih produk digital dari katalog terlebih dahulu.</p>
         <Link href="/" className="inline-block text-xs font-bold text-indigo-600 hover:underline">
@@ -158,7 +158,7 @@ function CheckoutContent() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
       <Link href={`/produk/${product.slug}`} className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 mb-6 transition-colors">
-        <ArrowLeft className="h-3.5 w-3.5" />
+        <FaIcon name="arrow-left" className="text-xs" />
         Kembali ke detail produk
       </Link>
 
@@ -214,12 +214,12 @@ function CheckoutContent() {
             >
               {isProcessing ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <FaIcon name="arrows-rotate" spin className="text-sm" />
                   Membuka Pembayaran...
                 </>
               ) : (
                 <>
-                  <Lock className="h-4 w-4" />
+                  <FaIcon name="lock" className="text-sm" />
                   Lanjut ke Pembayaran ({formatRupiah(product.price)})
                 </>
               )}
@@ -227,7 +227,7 @@ function CheckoutContent() {
           </form>
 
           <div className="flex items-center gap-2 text-xs text-slate-400">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <FaIcon name="shield" className="text-sm text-emerald-600" />
             <span>Pembayaran terenkripsi & diamankan 256-bit SSL via Midtrans</span>
           </div>
         </div>
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
   return (
     <Suspense fallback={
       <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <FaIcon name="arrows-rotate" spin className="text-3xl text-indigo-600" />
       </div>
     }>
       <CheckoutContent />

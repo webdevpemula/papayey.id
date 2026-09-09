@@ -1,11 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { mockCategories, mockProducts } from '@/lib/mockData';
 import { ProductCard } from '@/components/public/ProductCard';
 import { CategoryPills } from '@/components/public/CategoryPills';
-import { ChevronRight, Filter } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import { Product, Category } from '@/types/database';
 
 export const revalidate = 60;
@@ -76,9 +76,9 @@ export default async function CategoryPage({
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-slate-500">
         <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <FaIcon name="arrow-right" className="text-xs" />
         <Link href="/kategori/semua" className="hover:text-indigo-600 transition-colors">Kategori</Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <FaIcon name="arrow-right" className="text-xs" />
         <span className="font-semibold text-slate-900 dark:text-white">{title}</span>
       </nav>
 
@@ -94,7 +94,7 @@ export default async function CategoryPage({
 
           {/* Sorting Dropdown */}
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-slate-400" />
+            <FaIcon name="arrow-down-wide-short" className="text-sm text-slate-400" />
             <form method="GET" className="flex items-center gap-2">
               <select
                 name="sort"

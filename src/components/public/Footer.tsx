@@ -1,7 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, ShieldCheck, Zap, Download } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export function Footer() {
   return (
@@ -12,7 +12,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 border-b border-slate-100 pb-10 dark:border-slate-800">
           <div className="flex items-center gap-3.5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
-              <Download className="h-6 w-6" />
+              <FaIcon name="arrow-down-to-line" className="text-xl" />
             </div>
             <div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">Unduhan Instan</h4>
@@ -22,7 +22,7 @@ export function Footer() {
 
           <div className="flex items-center gap-3.5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-              <ShieldCheck className="h-6 w-6" />
+              <FaIcon name="shield" className="text-xl" />
             </div>
             <div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">Pembayaran Aman</h4>
@@ -32,7 +32,7 @@ export function Footer() {
 
           <div className="flex items-center gap-3.5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
-              <Zap className="h-6 w-6" />
+              <FaIcon name="bolt" className="text-xl" />
             </div>
             <div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">Garansi Akses Link</h4>

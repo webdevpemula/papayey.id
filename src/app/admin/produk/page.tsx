@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { formatRupiah } from '@/lib/utils';
 import { mockProducts } from '@/lib/mockData';
 import { Product } from '@/types/database';
-import { Plus, Check, X, Loader2 } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -56,14 +56,14 @@ export default function AdminProductsPage() {
           href="/admin/produk/baru"
           className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-indigo-700 transition-all self-start"
         >
-          <Plus className="h-4 w-4" /> Tambah Produk
+          <FaIcon name="plus" className="text-xs" /> Tambah Produk
         </Link>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm dark:border-slate-800 dark:bg-slate-900">
         {loading ? (
           <div className="p-12 text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
+            <div className="mx-auto flex items-center justify-center"><FaIcon name="arrows-rotate" spin className="text-3xl text-indigo-600" /></div>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -99,7 +99,7 @@ export default function AdminProductsPage() {
                           p.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
                         }`}
                       >
-                        {p.is_active ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        {p.is_active ? <FaIcon name="check" className="text-[10px]" /> : <span className="text-[10px]">✕</span>}
                         {p.is_active ? 'Aktif' : 'Nonaktif'}
                       </button>
                     </td>

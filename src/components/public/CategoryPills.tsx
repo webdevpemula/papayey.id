@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Category } from '@/types/database';
-import { Heart, Code2, Gamepad2, Landmark, Sparkles, BookOpen, Layout, Video } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 interface CategoryPillsProps {
   categories: Category[];
@@ -13,34 +13,34 @@ interface CategoryPillsProps {
 export function CategoryPills({ categories }: CategoryPillsProps) {
   const pathname = usePathname();
 
-  const getIcon = (iconName: string | null) => {
+  const getFaIconName = (iconName: string | null) => {
     switch (iconName) {
       case 'heart':
       case 'ayah':
       case 'dad':
       case 'dad-corner':
-        return Heart;
+        return 'heart';
       case 'code':
       case 'engineer':
       case 'engineer-corner':
-        return Code2;
+        return 'code';
       case 'gamepad':
       case 'gamer':
       case 'gamer-corner':
-        return Gamepad2;
+        return 'gamepad';
       case 'landmark':
       case 'asn':
       case 'asn-corner':
       case 'briefcase':
-        return Landmark;
+        return 'landmark';
       case 'book':
-        return BookOpen;
+        return 'file';
       case 'template':
-        return Layout;
+        return 'layer-group';
       case 'video':
-        return Video;
+        return 'box';
       default:
-        return Sparkles;
+        return 'wand-magic-sparkles';
     }
   };
 
@@ -55,12 +55,12 @@ export function CategoryPills({ categories }: CategoryPillsProps) {
             isAll ? 'clay-pill-active' : 'clay-pill-inactive hover:scale-[1.02]'
           }`}
         >
-          <Sparkles className="h-4 w-4" />
+          <FaIcon name="wand-magic-sparkles" className="text-sm" />
           Semua Produk
         </Link>
 
         {categories.map((cat) => {
-          const IconComponent = getIcon(cat.icon);
+          const iconName = getFaIconName(cat.icon);
           const isActive = pathname === `/kategori/${cat.slug}`;
 
           return (
@@ -71,7 +71,7 @@ export function CategoryPills({ categories }: CategoryPillsProps) {
                 isActive ? 'clay-pill-active' : 'clay-pill-inactive hover:scale-[1.02]'
               }`}
             >
-              <IconComponent className="h-4 w-4" />
+              <FaIcon name={iconName} className="text-sm" />
               {cat.name}
             </Link>
           );

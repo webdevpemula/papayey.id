@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types/database';
 import { formatRupiah } from '@/lib/utils';
-import { Download, ShoppingCart } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 import { motion } from 'framer-motion';
 
 interface ProductCardProps {
@@ -50,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-600/95 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
-              <Download className="h-2.5 w-2.5" /> Instan
+              <FaIcon name="arrow-down-to-line" className="text-[10px]" /> Instan
             </span>
           )}
         </div>

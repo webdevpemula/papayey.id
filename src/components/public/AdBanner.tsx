@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ExternalLink, Sparkles, Megaphone } from 'lucide-react';
+import { FaIcon } from '@/components/ui/FaIcon';
 
 interface AdBannerProps {
   sponsorName?: string;
@@ -30,8 +30,8 @@ export function AdBanner({
       {/* Tiny Ad / Sponsor Tag */}
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-xl bg-amber-500/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-            <Megaphone className="h-3 w-3" />
+          <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+            <FaIcon name="bell" className="text-[10px]" />
             {badgeText}
           </span>
           <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">
@@ -76,7 +76,7 @@ export function AdBanner({
               className="clay-btn-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-xs sm:text-sm font-bold shadow-md hover:scale-105 active:scale-95 transition-all"
             >
               {ctaText}
-              <ExternalLink className="h-4 w-4" />
+              <FaIcon name="arrow-up-right-from-square" className="text-xs" />
             </a>
 
             <Link
