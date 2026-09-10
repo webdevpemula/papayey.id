@@ -197,6 +197,7 @@ export default async function ProductDetailPage({
       {/* Ad Banner Placement: High-converting Sponsor Slot below Product Detail */}
       <section className="pt-6">
         <AdBanner
+          slot="product_detail"
           sponsorName="Rekomendasi Developer & Creator Tools"
           headline="Akselerasi Workflow Koding & Desain Anda dengan AI Assistant Pro"
           description="Tool otomatisasi produktivitas untuk desainer dan engineer digital. Hemat hingga 15 jam kerja setiap minggu dengan ribuan prompt dan template siap pakai."

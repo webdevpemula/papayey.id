@@ -311,6 +311,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {/* Search Results Sponsor Banner Slot */}
       <section className="pt-6">
         <AdBanner
+          slot="search"
           variant="compact"
           sponsorName="Partner Finansial Digital"
           headline="Kelola Transaksi Bisnis Digital Anda dengan Payment Gateway Terintegrasi"

@@ -67,7 +67,7 @@ export default async function HomePage() {
       </section>
 
       {/* Sponsored Ads Banner Slot */}
-      <AdBanner />
+      <AdBanner slot="home_main" />
 
       {/* All / Recent Products Grid */}
       <section className="space-y-5">
@@ -86,6 +86,7 @@ export default async function HomePage() {
       {/* Bottom Secondary Sponsor Showcase */}
       <section>
         <AdBanner
+          slot="home_bottom"
           variant="compact"
           sponsorName="Komunitas Creator & Developer"
           headline="Gabung Jaringan Eksklusif 10.000+ Kreator Produk Digital Indonesia"

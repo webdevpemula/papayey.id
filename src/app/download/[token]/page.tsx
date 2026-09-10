@@ -142,6 +142,7 @@ export default function DownloadPortalPage({
       {/* Post-purchase Sponsor Offer */}
       <div className="mt-8">
         <AdBanner
+          slot="download"
           variant="compact"
           sponsorName="Penawaran Eksklusif Pembeli"
           headline="Klaim Diskon Tambahan 25% untuk Template & Tools Digital Pilihan"

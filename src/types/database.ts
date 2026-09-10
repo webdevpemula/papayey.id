@@ -55,3 +55,30 @@ export interface AdminUser {
   email: string;
   created_at: string;
 }
+
+export type AdSlot =
+  | 'home_main'
+  | 'home_bottom'
+  | 'product_detail'
+  | 'category'
+  | 'search'
+  | 'download';
+
+export interface Advertisement {
+  id: string;
+  sponsor_name: string;
+  headline: string;
+  description: string | null;
+  cta_text: string;
+  cta_url: string;
+  image_url: string;
+  badge_text: string;
+  slot: AdSlot;
+  is_active: boolean;
+  start_date?: string | null;
+  end_date?: string | null;
+  clicks_count: number;
+  impressions_count?: number;
+  created_at: string;
+  updated_at?: string;
+}

@@ -138,6 +138,7 @@ export default async function CategoryPage({
       {/* Ad Banner Placement: Category Sponsor Banner */}
       <section className="pt-4">
         <AdBanner
+          slot="category"
           sponsorName="Hosting Partner papayey.id"
           headline="Bangun & Host Proyek Web Anda dengan Latensi Lokal Super Cepat"
           description="Infrastruktur Cloud VPS terpercaya di Indonesia dengan NVMe SSD, garansi uptime 99.99%, dan perlindungan data enterprise."

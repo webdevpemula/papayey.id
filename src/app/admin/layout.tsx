@@ -33,6 +33,7 @@ export default function AdminLayout({
     { label: 'Produk Digital', href: '/admin/produk', icon: 'box-archive' },
     { label: 'Kategori', href: '/admin/kategori', icon: 'folder-tree' },
     { label: 'Order Transaksi', href: '/admin/order', icon: 'cart-shopping' },
+    { label: 'Kelola Iklan', href: '/admin/iklan', icon: 'rectangle-ad' },
   ];
 
   return (
@@ -62,7 +63,11 @@ export default function AdminLayout({
 
         <nav className="mt-6 space-y-1">
           {navs.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              item.href === '/admin'
+                ? pathname === '/admin'
+                : pathname.startsWith(item.href);
+
             return (
               <Link
                 key={item.href}
