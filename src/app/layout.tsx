@@ -1,5 +1,4 @@
-﻿import type { Metadata } from 'next';
-import Script from 'next/script';
+import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/public/Navbar';
@@ -31,22 +30,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true';
-  const snapUrl = isProduction
-    ? 'https://app.midtrans.com/snap/snap.js'
-    : 'https://app.sandbox.midtrans.com/snap/snap.js';
-  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '';
-
   return (
     <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <head>
         <link rel="stylesheet" href="/fontawesome/css/fontawesome.css" />
         <link rel="stylesheet" href="/fontawesome/css/slab-regular.css" />
-        <Script
-          src={snapUrl}
-          data-client-key={clientKey}
-          strategy="lazyOnload"
-        />
       </head>
       <body className="min-h-full flex flex-col bg-slate-50/50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
         <Navbar />

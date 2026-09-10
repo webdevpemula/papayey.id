@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createSnapTransaction } from '@/lib/midtrans';
+import { createChargeTransaction } from '@/lib/midtrans';
 import { mockProducts } from '@/lib/mockData';
 
 const checkoutSchema = z.object({
   productId: z.string().min(1, 'Product ID wajib diisi'),
   buyerEmail: z.string().email('Format email tidak valid'),
   buyerName: z.string().optional().nullable(),
+  paymentMethod: z.string().default('bni_va'),
 });
 
 export async function POST(req: NextRequest) {
@@ -77,7 +78,24 @@ export async function POST(req: NextRequest) {
     const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderCode = `INV-${dateStr}-${randomHex}`;
 
-    // 4. Create Order in DB (status: pending)
+    // 4. Call Midtrans Core API (Direct Charge) for Selected Payment Method
+    const chargeResult = await createChargeTransaction({
+      orderCode,
+      grossAmount: product.price,
+      buyerEmail: validated.buyerEmail,
+      buyerName: validated.buyerName,
+      paymentMethod: validated.paymentMethod,
+      itemDetails: [
+        {
+          id: product.id,
+          name: product.title.substring(0, 50),
+          price: product.price,
+          quantity: 1,
+        },
+      ],
+    });
+
+    // 5. Create Order in DB (status: pending, with normalized payment details in notes)
     const { data: orderData, error: orderErr } = await supabase
       .from('orders')
       .insert({
@@ -87,6 +105,8 @@ export async function POST(req: NextRequest) {
         buyer_name: validated.buyerName?.trim() || null,
         price: product.price,
         status: 'pending',
+        midtrans_payment_type: chargeResult.payment_method,
+        notes: JSON.stringify(chargeResult),
         download_access_count: 0,
         email_sent: false,
       })
@@ -101,27 +121,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Create Midtrans Snap Transaction
-    const snapResult = await createSnapTransaction({
-      orderCode,
-      grossAmount: product.price,
-      buyerEmail: validated.buyerEmail,
-      buyerName: validated.buyerName,
-      itemDetails: [
-        {
-          id: product.id,
-          name: product.title.substring(0, 50),
-          price: product.price,
-          quantity: 1,
-        },
-      ],
-    });
-
     return NextResponse.json({
       success: true,
       order_code: orderCode,
-      snap_token: snapResult.token,
-      redirect_url: snapResult.redirect_url,
+      payment_details: chargeResult,
     });
   } catch (error: any) {
     console.error('Checkout API error:', error);
