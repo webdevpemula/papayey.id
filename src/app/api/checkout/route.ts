@@ -11,6 +11,8 @@ const checkoutSchema = z.object({
   paymentMethod: z.string().default('bni_va'),
 });
 
+const ESSENTIAL_PRODUCT_FIELDS = 'id, title, price, is_active, stock_type, stock_qty';
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -18,14 +20,14 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient();
 
-    // 1. Fetch Product by UUID or slug
+    // 1. Fetch Product by UUID or slug using targeted fields
     let product: any = null;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(validated.productId);
 
     if (isUuid) {
       const { data: dbProduct } = await supabase
         .from('products')
-        .select('*')
+        .select(ESSENTIAL_PRODUCT_FIELDS)
         .eq('id', validated.productId)
         .single();
       if (dbProduct) {
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
       // If productId was passed as slug
       const { data: dbProductBySlug } = await supabase
         .from('products')
-        .select('*')
+        .select(ESSENTIAL_PRODUCT_FIELDS)
         .eq('slug', validated.productId)
         .single();
       if (dbProductBySlug) {
@@ -50,7 +52,7 @@ export async function POST(req: NextRequest) {
         // Try finding matching product in db by slug to ensure valid UUID
         const { data: dbProductMatch } = await supabase
           .from('products')
-          .select('*')
+          .select(ESSENTIAL_PRODUCT_FIELDS)
           .eq('slug', foundMock.slug)
           .single();
         product = dbProductMatch || foundMock;
@@ -96,7 +98,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 5. Create Order in DB (status: pending, with normalized payment details in notes)
-    const { data: orderData, error: orderErr } = await supabase
+    const { error: orderErr } = await supabase
       .from('orders')
       .insert({
         order_code: orderCode,
@@ -109,9 +111,7 @@ export async function POST(req: NextRequest) {
         notes: JSON.stringify(chargeResult),
         download_access_count: 0,
         email_sent: false,
-      })
-      .select()
-      .single();
+      });
 
     if (orderErr) {
       console.error('DB Order Insert Error:', orderErr);

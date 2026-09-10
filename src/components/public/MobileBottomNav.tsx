@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -8,8 +8,12 @@ import { FaIcon } from '@/components/ui/FaIcon';
 export function MobileBottomNav() {
   const pathname = usePathname();
 
-  // Hide on admin routes
-  if (pathname.startsWith('/admin')) {
+  // Hide on admin routes and distraction-free checkout/payment funnels
+  if (
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/checkout') ||
+    pathname.startsWith('/order/')
+  ) {
     return null;
   }
 

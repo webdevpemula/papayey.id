@@ -50,14 +50,15 @@ export default function OrderStatusPage({
   const [activeGuideTab, setActiveGuideTab] = useState<'mbanking' | 'atm' | 'ibanking'>('mbanking');
   const [checkingManual, setCheckingManual] = useState(false);
 
-  const fetchStatus = async () => {
+  const fetchStatus = async (forceSync = false) => {
     try {
-      const res = await fetch(`/api/order/${code}/status`);
+      const url = forceSync ? `/api/order/${code}/status?sync=true` : `/api/order/${code}/status`;
+      const res = await fetch(url);
       if (res.ok) {
         const json = await res.json();
         setData(json);
 
-        // Stop polling if status reached final state
+        // Stop polling if status reached final terminal state
         if (['paid', 'failed', 'expired', 'refunded'].includes(json.status)) {
           setIsPolling(false);
         }
@@ -71,41 +72,53 @@ export default function OrderStatusPage({
   };
 
   useEffect(() => {
+    // Initial fetch
     fetchStatus();
 
     if (!isPolling) return;
 
-    // Smart Adaptive Polling: pauses when tab is hidden, immediate check on tab focus
-    let interval: any = null;
-    let pollCount = 0;
-    const maxPolls = 170; // ~10 minutes max polling duration
+    let timer: any = null;
+    let elapsedSeconds = 0;
+    const maxDurationSeconds = 600; // 10 minutes max polling duration
 
-    const startPolling = () => {
-      if (interval) clearInterval(interval);
-      interval = setInterval(() => {
-        if (document.hidden) return; // Save server resources if tab not active
-        pollCount++;
-        if (pollCount > maxPolls) {
-          setIsPolling(false);
-          clearInterval(interval);
-          return;
-        }
-        fetchStatus();
-      }, 3500);
+    const scheduleNextPoll = () => {
+      if (document.hidden || !isPolling || elapsedSeconds >= maxDurationSeconds) {
+        return;
+      }
+
+      // Adaptive Backoff:
+      // 0 - 30s: 4s interval (quick feedback for instant e-wallet/QRIS)
+      // 30s - 120s: 8s interval (standard bank transfer window)
+      // > 120s: 15s interval (passive background wait)
+      let delay = 4000;
+      if (elapsedSeconds > 120) {
+        delay = 15000;
+      } else if (elapsedSeconds > 30) {
+        delay = 8000;
+      }
+
+      timer = setTimeout(async () => {
+        elapsedSeconds += delay / 1000;
+        await fetchStatus();
+        scheduleNextPoll();
+      }, delay);
     };
 
     const handleVisibilityChange = () => {
       if (!document.hidden && isPolling) {
+        if (timer) clearTimeout(timer);
         fetchStatus(); // Instant check when user refocuses tab
-        startPolling();
+        scheduleNextPoll();
+      } else {
+        if (timer) clearTimeout(timer);
       }
     };
 
-    startPolling();
+    scheduleNextPoll();
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      if (interval) clearInterval(interval);
+      if (timer) clearTimeout(timer);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [code, isPolling]);
@@ -120,7 +133,7 @@ export default function OrderStatusPage({
 
   const handleManualCheck = () => {
     setCheckingManual(true);
-    fetchStatus();
+    fetchStatus(true); // Force immediate real-time sync with Midtrans
   };
 
   if (loading) {
@@ -160,14 +173,14 @@ export default function OrderStatusPage({
     : (details?.channel_type === 'qris' ? 'qris' : 'bni')) as any;
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-8 sm:py-12 space-y-6">
+    <div className="mx-auto max-w-lg px-3.5 sm:px-4 py-6 sm:py-12 space-y-6 pb-16">
       {/* Back Link */}
       <Link href="/" className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-indigo-600 transition-colors">
         <FaIcon name="arrow-left" className="text-xs" /> Kembali ke Toko
       </Link>
 
       {/* Main Status Container */}
-      <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 text-center shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none space-y-6">
+      <div className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-8 text-center shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none space-y-6">
         
         {/* State 1: Paid */}
         {isPaid && (
@@ -184,7 +197,7 @@ export default function OrderStatusPage({
             {data.download_token && (
               <Link
                 href={`/download/${data.download_token}`}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 active:scale-[0.98] transition-all"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 active:scale-[0.98] transition-all min-h-[48px]"
               >
                 <FaIcon name="arrow-down-to-line" className="text-base" />
                 Akses & Unduh Produk Sekarang
@@ -201,10 +214,10 @@ export default function OrderStatusPage({
               <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 animate-pulse">
                 <FaIcon name="clock" className="text-3xl" />
               </div>
-              <h1 className="text-2xl font-black text-slate-900 dark:text-white">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                 Selesaikan Pembayaran
               </h1>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 Lakukan pembayaran sesuai instruksi di bawah ini. Status akan terverifikasi secara otomatis.
               </p>
 
@@ -215,7 +228,7 @@ export default function OrderStatusPage({
             </div>
 
             {/* Total Payment Highlight Card */}
-            <div className="rounded-2xl bg-indigo-50/60 p-4 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 flex items-center justify-between">
+            <div className="rounded-2xl bg-indigo-50/60 p-4 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 flex items-center justify-between gap-3">
               <div>
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                   Total Tagihan
@@ -227,7 +240,7 @@ export default function OrderStatusPage({
               <button
                 type="button"
                 onClick={() => copyToClipboard(data.price.toString(), 'amount')}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-800 px-3 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 shadow-sm hover:bg-slate-50 border border-indigo-100 dark:border-indigo-900/50 transition-all active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-800 px-3 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 shadow-sm hover:bg-slate-50 border border-indigo-100 dark:border-indigo-900/50 transition-all active:scale-95 shrink-0"
               >
                 {copiedKey === 'amount' ? (
                   <>
@@ -236,7 +249,7 @@ export default function OrderStatusPage({
                   </>
                 ) : (
                   <>
-                    <FaIcon name="newspaper" className="text-xs" />
+                    <FaIcon name="copy" className="text-xs" />
                     <span>Salin Jumlah</span>
                   </>
                 )}
@@ -245,19 +258,19 @@ export default function OrderStatusPage({
 
             {/* CHANNEL 1: QRIS */}
             {details?.channel_type === 'qris' && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 text-center space-y-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900 text-center space-y-4">
                 <div className="flex items-center justify-center gap-2 pb-1">
                   <PaymentLogo channel="qris" className="h-7 w-auto" />
                 </div>
 
                 {details.qr_url ? (
-                  <div className="relative mx-auto w-64 h-64 rounded-2xl border-2 border-slate-100 bg-white p-2 shadow-sm dark:border-slate-800 flex items-center justify-center">
+                  <div className="relative mx-auto w-52 sm:w-64 aspect-square rounded-2xl border-2 border-slate-100 bg-white p-2 shadow-sm dark:border-slate-800 flex items-center justify-center max-w-full">
                     <Image
                       src={details.qr_url}
                       alt="QRIS Code Midtrans"
                       width={240}
                       height={240}
-                      className="object-contain"
+                      className="object-contain w-full h-full"
                       unoptimized
                     />
                   </div>
@@ -275,7 +288,7 @@ export default function OrderStatusPage({
                     download={`QRIS-${data.order_code}.png`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:underline"
+                    className="inline-flex min-h-[40px] items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 hover:underline px-3 py-1.5 rounded-lg border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/50 dark:bg-indigo-950/30"
                   >
                     <FaIcon name="arrow-down-to-line" className="text-xs" /> Unduh / Simpan Gambar QR
                   </a>
@@ -285,7 +298,7 @@ export default function OrderStatusPage({
 
             {/* CHANNEL 2: VIRTUAL ACCOUNT (BNI, BCA, BRI, Permata) */}
             {details?.channel_type === 'va' && details.va_number && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 space-y-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
                   <div className="flex items-center gap-2.5">
                     <PaymentLogo channel={logoType} className="h-6 w-auto" />
@@ -299,14 +312,14 @@ export default function OrderStatusPage({
                   <span className="text-[11px] font-bold text-slate-500 block">
                     Nomor Virtual Account
                   </span>
-                  <div className="flex items-center justify-between gap-2 rounded-xl bg-slate-50 p-3.5 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                    <span className="font-mono text-base sm:text-lg font-black tracking-wider text-slate-900 dark:text-white select-all">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-slate-50 p-3.5 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <span className="font-mono text-base sm:text-lg font-black tracking-wider text-slate-900 dark:text-white select-all break-all">
                       {details.va_number}
                     </span>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(details.va_number!, 'va')}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-700 transition-all active:scale-95"
+                      className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-700 transition-all active:scale-95 shrink-0"
                     >
                       {copiedKey === 'va' ? (
                         <>
@@ -315,8 +328,8 @@ export default function OrderStatusPage({
                         </>
                       ) : (
                         <>
-                          <FaIcon name="newspaper" className="text-xs" />
-                          <span>Salin VA</span>
+                          <FaIcon name="copy" className="text-xs" />
+                          <span>Salin No. VA</span>
                         </>
                       )}
                     </button>
@@ -328,11 +341,11 @@ export default function OrderStatusPage({
                   <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
                     Petunjuk Pembayaran:
                   </span>
-                  <div className="flex gap-1 border-b border-slate-100 dark:border-slate-800 pb-2">
+                  <div className="flex gap-1 border-b border-slate-100 dark:border-slate-800 pb-2 overflow-x-auto">
                     <button
                       type="button"
                       onClick={() => setActiveGuideTab('mbanking')}
-                      className={`px-3 py-1 text-xs font-bold rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors shrink-0 min-h-[36px] ${
                         activeGuideTab === 'mbanking' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                       }`}
                     >
@@ -341,7 +354,7 @@ export default function OrderStatusPage({
                     <button
                       type="button"
                       onClick={() => setActiveGuideTab('atm')}
-                      className={`px-3 py-1 text-xs font-bold rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors shrink-0 min-h-[36px] ${
                         activeGuideTab === 'atm' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                       }`}
                     >
@@ -350,7 +363,7 @@ export default function OrderStatusPage({
                     <button
                       type="button"
                       onClick={() => setActiveGuideTab('ibanking')}
-                      className={`px-3 py-1 text-xs font-bold rounded-lg transition-colors ${
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors shrink-0 min-h-[36px] ${
                         activeGuideTab === 'ibanking' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                       }`}
                     >
@@ -358,7 +371,7 @@ export default function OrderStatusPage({
                     </button>
                   </div>
 
-                  <ol className="list-decimal list-inside space-y-1 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <ol className="list-decimal list-inside space-y-1.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                     {activeGuideTab === 'mbanking' && (
                       <>
                         <li>Buka aplikasi Mobile Banking bank Anda dan login.</li>
@@ -391,7 +404,7 @@ export default function OrderStatusPage({
 
             {/* CHANNEL 3: MANDIRI BILL */}
             {details?.channel_type === 'bill' && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 space-y-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
                   <div className="flex items-center gap-2.5">
                     <PaymentLogo channel="mandiri" className="h-6 w-auto" />
@@ -413,7 +426,7 @@ export default function OrderStatusPage({
                       <button
                         type="button"
                         onClick={() => copyToClipboard(details.biller_code || '70012', 'biller')}
-                        className="text-[11px] font-bold text-indigo-600 hover:underline"
+                        className="text-[11px] font-bold text-indigo-600 hover:underline min-h-[32px] inline-flex items-center"
                       >
                         {copiedKey === 'biller' ? 'Disalin!' : 'Salin'}
                       </button>
@@ -431,7 +444,7 @@ export default function OrderStatusPage({
                       <button
                         type="button"
                         onClick={() => copyToClipboard(details.bill_key || '', 'billkey')}
-                        className="text-[11px] font-bold text-indigo-600 hover:underline"
+                        className="text-[11px] font-bold text-indigo-600 hover:underline min-h-[32px] inline-flex items-center"
                       >
                         {copiedKey === 'billkey' ? 'Disalin!' : 'Salin'}
                       </button>
@@ -450,7 +463,7 @@ export default function OrderStatusPage({
 
             {/* CHANNEL 4: E-WALLET (GoPay / ShopeePay) */}
             {details?.channel_type === 'ewallet' && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 text-center space-y-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900 text-center space-y-4">
                 <div className="flex justify-center">
                   <PaymentLogo channel={logoType} className="h-7 w-auto" />
                 </div>
@@ -460,7 +473,7 @@ export default function OrderStatusPage({
                     href={details.deeplink_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 active:scale-95 transition-all"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 active:scale-95 transition-all min-h-[48px]"
                   >
                     <FaIcon name="arrow-up-right-from-square" className="text-xs" />
                     Buka Aplikasi Pembayaran
@@ -484,10 +497,10 @@ export default function OrderStatusPage({
                 type="button"
                 onClick={handleManualCheck}
                 disabled={checkingManual}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 px-4 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 transition-all active:scale-95 disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3.5 px-4 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 transition-all active:scale-95 disabled:opacity-50 min-h-[44px]"
               >
                 <FaIcon name="arrows-rotate" spin={checkingManual} className="text-xs text-indigo-600" />
-                {checkingManual ? 'Memeriksa ke Bank...' : 'Saya Sudah Bayar (Cek Status Sekarang)'}
+                {checkingManual ? 'Memverifikasi ke Bank...' : 'Saya Sudah Bayar (Cek Status Sekarang)'}
               </button>
             </div>
           </div>
@@ -509,7 +522,7 @@ export default function OrderStatusPage({
             </div>
             <Link
               href="/"
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3.5 px-6 text-sm font-bold text-white shadow-md hover:bg-indigo-700 transition-all"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3.5 px-6 text-sm font-bold text-white shadow-md hover:bg-indigo-700 transition-all min-h-[48px]"
             >
               Pesan Ulang Produk
               <FaIcon name="arrow-right" className="text-sm" />
@@ -529,7 +542,7 @@ export default function OrderStatusPage({
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400">Email Pembeli</span>
-            <span className="font-medium text-slate-700 dark:text-slate-300">{data.buyer_email}</span>
+            <span className="font-medium text-slate-700 dark:text-slate-300 break-all">{data.buyer_email}</span>
           </div>
           {data.paid_at && (
             <div className="flex justify-between">

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -90,7 +89,7 @@ function CheckoutContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Selected Payment Channel (Default: BNI VA as seen in user reference or QRIS)
+  // Selected Payment Channel (Default: BNI VA as seen in user reference)
   const [selectedMethod, setSelectedMethod] = useState<string>('bni_va');
 
   // Discount code state
@@ -121,18 +120,18 @@ function CheckoutContent() {
         return;
       }
 
-      // 2. Fetch from Supabase client
+      // 2. Fetch targeted fields from Supabase client
       try {
         const { createClient } = await import('@/lib/supabase/client');
         const supabase = createClient();
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId!);
-        const query = supabase.from('products').select('*, category:categories(*)');
+        const query = supabase.from('products').select('id, title, slug, price, is_active, stock_type, stock_qty, thumbnail_url');
         const { data } = isUuid 
           ? await query.eq('id', productId).single()
           : await query.eq('slug', productId).single();
 
         if (data) {
-          setProduct(data);
+          setProduct(data as any);
         } else {
           setProduct(mockProducts[0]);
         }
@@ -227,8 +226,8 @@ function CheckoutContent() {
   const finalPrice = calculateFinalPrice();
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
-      <Link href={`/produk/${product.slug}`} className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 mb-6 transition-colors">
+    <div className="mx-auto max-w-2xl px-3.5 sm:px-6 py-6 sm:py-12 pb-16">
+      <Link href={`/produk/${product.slug}`} className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 mb-5 transition-colors">
         <FaIcon name="arrow-left" className="text-xs" />
         Kembali ke detail produk
       </Link>
@@ -236,7 +235,7 @@ function CheckoutContent() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white">Checkout Pembelian</h1>
-          <p className="text-xs text-slate-500">Pilih metode pembayaran langsung di bawah ini tanpa popup eksternal.</p>
+          <p className="text-xs text-slate-500 mt-1">Pilih metode pembayaran langsung di bawah ini tanpa popup eksternal.</p>
         </div>
 
         {errorMessage && (
@@ -247,7 +246,7 @@ function CheckoutContent() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Section 1: Customer Data */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
             <h2 className="text-sm font-bold text-slate-900 dark:text-white border-b border-slate-100 pb-2 dark:border-slate-800">
               Data Pembeli
             </h2>
@@ -258,6 +257,8 @@ function CheckoutContent() {
               </label>
               <input
                 type="email"
+                inputMode="email"
+                autoComplete="email"
                 placeholder="nama@email.com"
                 {...register('buyerEmail')}
                 className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -276,6 +277,7 @@ function CheckoutContent() {
               </label>
               <input
                 type="text"
+                autoComplete="name"
                 placeholder="Nama Anda"
                 {...register('buyerName')}
                 className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -314,7 +316,7 @@ function CheckoutContent() {
             )}
           </div>
 
-          {/* Section 3: Metode Pembayaran (Matching User's Reference Screenshot) */}
+          {/* Section 3: Metode Pembayaran (Responsive Cards) */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <h3 className="text-base font-black text-slate-900 dark:text-white">
@@ -330,13 +332,13 @@ function CheckoutContent() {
                   <label
                     key={opt.id}
                     onClick={() => setSelectedMethod(opt.id)}
-                    className={`flex items-center justify-between p-3.5 rounded-xl border transition-all cursor-pointer select-none ${
+                    className={`flex items-center justify-between p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer select-none ${
                       isSelected
                         ? 'border-indigo-500 bg-indigo-50/50 dark:border-indigo-500 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20 shadow-sm'
                         : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700'
                     }`}
                   >
-                    <div className="flex items-center gap-3.5">
+                    <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
                       {/* Radio Indicator */}
                       <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
                         isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800'
@@ -345,23 +347,23 @@ function CheckoutContent() {
                       </div>
 
                       {/* Brand Logo */}
-                      <div className="flex h-7 w-20 shrink-0 items-center justify-start">
-                        <PaymentLogo channel={opt.logo} className="h-6 w-auto object-contain" />
+                      <div className="flex h-7 w-16 sm:w-20 shrink-0 items-center justify-start">
+                        <PaymentLogo channel={opt.logo} className="h-5 sm:h-6 w-auto max-w-full object-contain" />
                       </div>
 
                       {/* Channel Info */}
-                      <div>
-                        <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white block">
+                      <div className="min-w-0 flex-1 pr-1">
+                        <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white block truncate sm:whitespace-normal leading-snug">
                           {opt.name}
                         </span>
-                        <span className="text-[10px] text-slate-400 hidden sm:block">
+                        <span className="text-[10px] text-slate-400 hidden sm:block truncate">
                           {opt.sublabel}
                         </span>
                       </div>
                     </div>
 
                     {opt.isPopular && (
-                      <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-[10px] font-bold text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                      <span className="shrink-0 rounded-full bg-indigo-100 px-2 sm:px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 ml-1.5">
                         Populer
                       </span>
                     )}
@@ -371,8 +373,8 @@ function CheckoutContent() {
             </div>
           </div>
 
-          {/* Section 4: Rincian Pesanan Box (Matching User's Reference Screenshot) */}
-          <div className="rounded-xl border-2 border-indigo-500/60 bg-white p-5 shadow-sm dark:border-indigo-500/40 dark:bg-slate-900 space-y-4">
+          {/* Section 4: Rincian Pesanan Box */}
+          <div className="rounded-xl border-2 border-indigo-500/60 bg-white p-4 sm:p-5 shadow-sm dark:border-indigo-500/40 dark:bg-slate-900 space-y-4">
             <h4 className="text-xs font-black tracking-wider uppercase text-slate-900 dark:text-white underline underline-offset-4">
               RINCIAN PESANAN:
             </h4>
@@ -412,7 +414,7 @@ function CheckoutContent() {
           <button
             type="submit"
             disabled={isProcessing}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-50 transition-all"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3.5 sm:py-4 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-50 transition-all min-h-[48px]"
           >
             {isProcessing ? (
               <>
@@ -427,8 +429,8 @@ function CheckoutContent() {
             )}
           </button>
 
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 pt-1">
-            <FaIcon name="shield" className="text-sm text-emerald-600" />
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 pt-1 text-center">
+            <FaIcon name="shield" className="text-sm text-emerald-600 shrink-0" />
             <span>Pembayaran terenkripsi & diproses otomatis via Midtrans Bank Partner</span>
           </div>
         </form>
