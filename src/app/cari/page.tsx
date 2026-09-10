@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { mockCategories, mockProducts } from '@/lib/mockData';
 import { ProductCard } from '@/components/public/ProductCard';
+import { AdBanner } from '@/components/public/AdBanner';
 import { FaIcon } from '@/components/ui/FaIcon';
 import { Product, Category } from '@/types/database';
 
@@ -306,6 +307,19 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           ))}
         </div>
       )}
+
+      {/* Search Results Sponsor Banner Slot */}
+      <section className="pt-6">
+        <AdBanner
+          variant="compact"
+          sponsorName="Partner Finansial Digital"
+          headline="Kelola Transaksi Bisnis Digital Anda dengan Payment Gateway Terintegrasi"
+          description="Terima pembayaran QRIS otomatis, Virtual Account semua bank, dan e-wallet dalam satu integrasi API mudah."
+          ctaText="Pelajari Selengkapnya"
+          ctaUrl="https://example.com/payment-sponsor"
+          imageUrl="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=60"
+        />
+      </section>
 
     </div>
   );

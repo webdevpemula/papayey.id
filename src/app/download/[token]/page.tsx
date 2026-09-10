@@ -3,6 +3,7 @@
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { FaIcon } from '@/components/ui/FaIcon';
+import { AdBanner } from '@/components/public/AdBanner';
 
 export default function DownloadPortalPage({
   params,
@@ -137,6 +138,20 @@ export default function DownloadPortalPage({
         </p>
 
       </div>
+
+      {/* Post-purchase Sponsor Offer */}
+      <div className="mt-8">
+        <AdBanner
+          variant="compact"
+          sponsorName="Penawaran Eksklusif Pembeli"
+          headline="Klaim Diskon Tambahan 25% untuk Template & Tools Digital Pilihan"
+          description="Tingkatkan hasil kerja Anda dengan bundle aset digital pelengkap khusus pembeli terverifikasi hari ini."
+          ctaText="Lihat Penawaran"
+          ctaUrl="https://example.com/exclusive-offer"
+          imageUrl="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60"
+        />
+      </div>
+
     </div>
   );
 }

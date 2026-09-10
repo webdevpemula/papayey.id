@@ -83,6 +83,19 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Bottom Secondary Sponsor Showcase */}
+      <section>
+        <AdBanner
+          variant="compact"
+          sponsorName="Komunitas Creator & Developer"
+          headline="Gabung Jaringan Eksklusif 10.000+ Kreator Produk Digital Indonesia"
+          description="Dapatkan akses webinar mingguan, template kit premium gratis, dan peluang kolaborasi proyek bernilai tinggi."
+          ctaText="Gabung Komunitas"
+          ctaUrl="https://example.com/komunitas"
+          imageUrl="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=60"
+        />
+      </section>
+
     </div>
   );
 }

@@ -1,10 +1,10 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { mockCategories, mockProducts } from '@/lib/mockData';
 import { ProductCard } from '@/components/public/ProductCard';
 import { CategoryPills } from '@/components/public/CategoryPills';
+import { AdBanner } from '@/components/public/AdBanner';
 import { FaIcon } from '@/components/ui/FaIcon';
 import { Product, Category } from '@/types/database';
 
@@ -61,7 +61,7 @@ export default async function CategoryPage({
     } else if (slug !== 'semua') {
       products = mockProducts.filter((p) => p.category?.slug === slug);
     }
-  } catch (err) {
+  } catch {
     if (slug !== 'semua') {
       currentCategory = mockCategories.find((c) => c.slug === slug) || null;
       products = mockProducts.filter((p) => p.category?.slug === slug);
@@ -71,7 +71,7 @@ export default async function CategoryPage({
   const title = currentCategory ? currentCategory.name : 'Semua Produk';
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8">
       
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-slate-500">
@@ -134,6 +134,18 @@ export default async function CategoryPage({
           ))}
         </div>
       )}
+
+      {/* Ad Banner Placement: Category Sponsor Banner */}
+      <section className="pt-4">
+        <AdBanner
+          sponsorName="Hosting Partner papayey.id"
+          headline="Bangun & Host Proyek Web Anda dengan Latensi Lokal Super Cepat"
+          description="Infrastruktur Cloud VPS terpercaya di Indonesia dengan NVMe SSD, garansi uptime 99.99%, dan perlindungan data enterprise."
+          ctaText="Lihat Paket Hosting"
+          ctaUrl="https://example.com/hosting-sponsor"
+          imageUrl="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=60"
+        />
+      </section>
 
     </div>
   );

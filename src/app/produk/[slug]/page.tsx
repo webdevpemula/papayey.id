@@ -1,10 +1,11 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { mockProducts } from '@/lib/mockData';
 import { StickyBuyBar } from '@/components/public/StickyBuyBar';
+import { AdBanner } from '@/components/public/AdBanner';
 import { formatRupiah } from '@/lib/utils';
 import { FaIcon } from '@/components/ui/FaIcon';
 import { Product } from '@/types/database';
@@ -28,7 +29,7 @@ export default async function ProductDetailPage({
       .single();
 
     if (data) product = data;
-  } catch (err) {
+  } catch {
     console.log('Database error, falling back to mock product');
   }
 
@@ -44,10 +45,10 @@ export default async function ProductDetailPage({
   const isAvailable = !isOutOfStock;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-10">
       
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-6">
+      <nav className="flex items-center gap-1.5 text-xs text-slate-500">
         <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
         <FaIcon name="arrow-right" className="text-xs" />
         {product.category && (
@@ -156,7 +157,7 @@ export default async function ProductDetailPage({
               {isAvailable ? (
                 <Link
                   href={`/checkout?productId=${product.id}`}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 active:scale-[0.98] transition-all"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-4 px-6 text-sm font-bold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 active:scale-[0.98] transition-all min-h-[48px]"
                 >
                   <FaIcon name="cart-shopping" className="text-base" />
                   Beli Sekarang (Akses Instan)
@@ -164,7 +165,7 @@ export default async function ProductDetailPage({
               ) : (
                 <button
                   disabled
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-200 py-4 px-6 text-sm font-bold text-slate-400 cursor-not-allowed dark:bg-slate-800"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-200 py-4 px-6 text-sm font-bold text-slate-400 cursor-not-allowed dark:bg-slate-800 min-h-[48px]"
                 >
                   <FaIcon name="triangle-exclamation" className="text-base" />
                   Produk Tidak Tersedia / Stok Habis
@@ -192,6 +193,18 @@ export default async function ProductDetailPage({
         </div>
 
       </div>
+
+      {/* Ad Banner Placement: High-converting Sponsor Slot below Product Detail */}
+      <section className="pt-6">
+        <AdBanner
+          sponsorName="Rekomendasi Developer & Creator Tools"
+          headline="Akselerasi Workflow Koding & Desain Anda dengan AI Assistant Pro"
+          description="Tool otomatisasi produktivitas untuk desainer dan engineer digital. Hemat hingga 15 jam kerja setiap minggu dengan ribuan prompt dan template siap pakai."
+          ctaText="Coba Gratis 14 Hari"
+          ctaUrl="https://example.com/developer-tools"
+          imageUrl="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60"
+        />
+      </section>
 
       {/* Sticky Buy Bar for Mobile Viewport */}
       <StickyBuyBar productId={product.id} price={product.price} isAvailable={isAvailable} />
