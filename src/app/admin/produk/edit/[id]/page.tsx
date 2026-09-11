@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { slugify } from '@/lib/utils';
-import { mockCategories } from '@/lib/mockData';
-import { Category } from '@/types/database';
+import { mockCategories, mockProducts } from '@/lib/mockData';
+import { Category, Product } from '@/types/database';
 import { FaIcon } from '@/components/ui/FaIcon';
 
 const PRESET_THUMBNAILS = [
@@ -20,9 +20,13 @@ const PRESET_THUMBNAILS = [
   { label: 'Infografis & Presentasi', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60' },
 ];
 
-export default function AdminNewProductPage() {
+export default function AdminEditProductPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const productId = params?.id as string;
+
+  const [loadingInitial, setLoadingInitial] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
 
   // Form fields
@@ -32,9 +36,7 @@ export default function AdminNewProductPage() {
   const [price, setPrice] = useState('');
   
   // Thumbnails Manager: min 1, max 7
-  const [thumbnails, setThumbnails] = useState<string[]>([
-    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60'
-  ]);
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
   const [newThumbUrl, setNewThumbUrl] = useState('');
 
   // Delivery Content Type: 'file' or 'link'
@@ -46,24 +48,67 @@ export default function AdminNewProductPage() {
   const [stockQty, setStockQty] = useState('10');
 
   useEffect(() => {
-    async function loadCats() {
+    async function loadData() {
       try {
         const supabase = createClient();
-        const { data } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-        if (data && data.length > 0) {
-          setCategories(data);
-          setCategoryId(data[0].id);
+        
+        // 1. Load categories
+        const { data: cats } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
+        const resolvedCats = cats && cats.length > 0 ? cats : mockCategories;
+        setCategories(resolvedCats);
+
+        // 2. Load product
+        let foundProduct: Product | null = null;
+        const { data: prodData } = await supabase.from('products').select('*').eq('id', productId).single();
+        if (prodData) {
+          foundProduct = prodData;
         } else {
-          setCategories(mockCategories);
-          setCategoryId(mockCategories[0].id);
+          foundProduct = mockProducts.find((p) => p.id === productId) || null;
+        }
+
+        if (foundProduct) {
+          setTitle(foundProduct.title || '');
+          setCategoryId(foundProduct.category_id || resolvedCats[0]?.id || '');
+          setDescription(foundProduct.description || '');
+          setPrice(String(foundProduct.price || ''));
+          
+          // Thumbnails
+          const initialThumbs = [
+            foundProduct.thumbnail_url,
+            ...(Array.isArray(foundProduct.preview_images) ? foundProduct.preview_images : [])
+          ].filter((u): u is string => typeof u === 'string' && u.trim().length > 0);
+
+          const uniqueThumbs = Array.from(new Set(initialThumbs)).slice(0, 7);
+          setThumbnails(
+            uniqueThumbs.length > 0
+              ? uniqueThumbs
+              : ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800']
+          );
+
+          // Delivery asset
+          const asset = foundProduct.file_path || '';
+          if (asset.startsWith('http://') || asset.startsWith('https://')) {
+            setDeliveryType('link');
+            setExternalUrl(asset);
+          } else {
+            setDeliveryType('file');
+            setFilePath(asset);
+          }
+
+          setStockType(foundProduct.stock_type || 'unlimited');
+          setStockQty(String(foundProduct.stock_qty || 10));
+        } else {
+          alert('Produk tidak ditemukan.');
+          router.push('/admin/produk');
         }
       } catch {
-        setCategories(mockCategories);
-        setCategoryId(mockCategories[0].id);
+        alert('Gagal memuat data produk.');
+      } finally {
+        setLoadingInitial(false);
       }
     }
-    loadCats();
-  }, []);
+    loadData();
+  }, [productId, router]);
 
   // Thumbnail handlers
   const handleAddThumbnail = (urlToAdd?: string) => {
@@ -99,7 +144,7 @@ export default function AdminNewProductPage() {
 
     const cleanThumbnails = thumbnails.map((t) => t.trim()).filter(Boolean);
     if (cleanThumbnails.length < 1) {
-      alert('Mohon masukkan minimal 1 thumbnail untuk produk ini.');
+      alert('Mohon sediakan minimal 1 thumbnail untuk produk ini.');
       return;
     }
     if (cleanThumbnails.length > 7) {
@@ -107,7 +152,7 @@ export default function AdminNewProductPage() {
       return;
     }
 
-    setLoading(true);
+    setSubmitting(true);
 
     try {
       const supabase = createClient();
@@ -128,19 +173,27 @@ export default function AdminNewProductPage() {
         file_path: resolvedFileAsset,
         stock_type: stockType,
         stock_qty: stockType === 'limited' ? parseInt(stockQty, 10) : null,
-        is_active: true,
       };
 
-      const { error } = await supabase.from('products').insert(payload);
+      const { error } = await supabase.from('products').update(payload).eq('id', productId);
       if (error) throw error;
 
       router.push('/admin/produk');
     } catch (err: any) {
-      alert(err.message || 'Gagal menyimpan produk.');
+      alert(err.message || 'Gagal memperbarui produk.');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  if (loadingInitial) {
+    return (
+      <div className="p-16 text-center">
+        <FaIcon name="arrows-rotate" spin className="text-3xl text-indigo-600 mx-auto mb-3" />
+        <p className="text-xs font-bold text-slate-400">Memuat data produk...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 pb-12">
@@ -149,8 +202,8 @@ export default function AdminNewProductPage() {
       </Link>
 
       <div className="space-y-1">
-        <h1 className="text-2xl font-black text-slate-900 dark:text-white">Tambah Produk Digital</h1>
-        <p className="text-xs text-slate-500">Tentukan informasi produk, galeri thumbnail (1-7 foto), dan berkas/tautan yang akan diterima pembeli.</p>
+        <h1 className="text-2xl font-black text-slate-900 dark:text-white">Edit Produk Digital</h1>
+        <p className="text-xs text-slate-500">Perbarui rincian produk, atur 1-7 thumbnail gambar, dan atur berkas pengiriman.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -163,7 +216,7 @@ export default function AdminNewProductPage() {
           <input
             type="text"
             required
-            placeholder="Contoh: Financial Blueprint Ayah Muda / SaaS Boilerplate"
+            placeholder="Contoh: Financial Blueprint Ayah Muda"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -307,7 +360,7 @@ export default function AdminNewProductPage() {
                 </button>
               </div>
 
-              {/* Preset suggestion chips */}
+              {/* Preset suggestions */}
               <div className="flex flex-wrap items-center gap-1.5 pt-1">
                 <span className="text-[10px] text-slate-400 mr-1">Preset Cepat:</span>
                 {PRESET_THUMBNAILS.map((preset) => (
@@ -339,7 +392,7 @@ export default function AdminNewProductPage() {
           <textarea
             rows={4}
             required
-            placeholder="Jelaskan apa yang didapatkan pembeli, manfaat, serta isi materinya..."
+            placeholder="Jelaskan apa yang didapatkan pembeli..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -353,12 +406,11 @@ export default function AdminNewProductPage() {
             <div>
               <h4 className="text-xs font-bold text-slate-900 dark:text-white">Aset Digital yang Muncul Setelah Pembeli Membayar</h4>
               <p className="text-[11px] text-slate-500">
-                Pilih apakah produk ini berupa file yang diunduh langsung (PDF, ZIP, Excel) atau tautan akses online (Notion, Google Drive, dsb).
+                Pilih apakah produk ini berupa file yang diunduh langsung atau tautan akses online.
               </p>
             </div>
           </div>
 
-          {/* Delivery Type Tabs */}
           <div className="flex gap-2">
             <button
               type="button"
@@ -370,7 +422,7 @@ export default function AdminNewProductPage() {
               }`}
             >
               <FaIcon name="file-zipper" className="text-xs" />
-              File Unduhan (ZIP / PDF / Excel)
+              File Unduhan
             </button>
             <button
               type="button"
@@ -382,11 +434,10 @@ export default function AdminNewProductPage() {
               }`}
             >
               <FaIcon name="link" className="text-xs" />
-              Tautan Akses (Notion / Drive / Figma)
+              Tautan Akses
             </button>
           </div>
 
-          {/* Conditional inputs */}
           {deliveryType === 'file' ? (
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -394,7 +445,6 @@ export default function AdminNewProductPage() {
               </label>
               <input
                 type="text"
-                placeholder="Contoh: products/financial-blueprint.xlsx (Otomatis jika dikosongkan)"
                 value={filePath}
                 onChange={(e) => setFilePath(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -408,7 +458,6 @@ export default function AdminNewProductPage() {
               <input
                 type="url"
                 required={deliveryType === 'link'}
-                placeholder="Contoh: https://notion.so/my-workspace/template-xyz atau link Drive"
                 value={externalUrl}
                 onChange={(e) => setExternalUrl(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -459,18 +508,18 @@ export default function AdminNewProductPage() {
           </Link>
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting}
             className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 disabled:opacity-50 transition-all"
           >
-            {loading ? (
+            {submitting ? (
               <>
                 <FaIcon name="arrows-rotate" spin className="text-xs" />
-                Menyimpan...
+                Menyimpan Perubahan...
               </>
             ) : (
               <>
                 <FaIcon name="check" className="text-xs" />
-                Terbitkan Produk
+                Simpan Perubahan
               </>
             )}
           </button>

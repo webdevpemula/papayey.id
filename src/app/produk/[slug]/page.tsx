@@ -1,11 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { mockProducts } from '@/lib/mockData';
 import { StickyBuyBar } from '@/components/public/StickyBuyBar';
 import { AdBanner } from '@/components/public/AdBanner';
+import { ProductImageGallery } from '@/components/public/ProductImageGallery';
 import { formatRupiah } from '@/lib/utils';
 import { FaIcon } from '@/components/ui/FaIcon';
 import { Product } from '@/types/database';
@@ -44,6 +44,17 @@ export default async function ProductDetailPage({
   const isOutOfStock = product.stock_type === 'limited' && (product.stock_qty ?? 0) <= 0;
   const isAvailable = !isOutOfStock;
 
+  // Compile up to 7 thumbnails (ensuring minimum 1)
+  const rawImages = [
+    product.thumbnail_url,
+    ...(Array.isArray(product.preview_images) ? product.preview_images : [])
+  ].filter((img): img is string => typeof img === 'string' && img.trim().length > 0);
+
+  const allThumbnails = Array.from(new Set(rawImages)).slice(0, 7);
+  if (allThumbnails.length === 0) {
+    allThumbnails.push('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60');
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-10">
       
@@ -66,28 +77,8 @@ export default async function ProductDetailPage({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         
         {/* Left: Thumbnail & Preview Gallery (7 cols) */}
-        <div className="space-y-4 lg:col-span-7">
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <Image
-              src={product.thumbnail_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60'}
-              alt={product.title}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover"
-            />
-          </div>
-
-          {/* Additional Preview Images if any */}
-          {product.preview_images && product.preview_images.length > 1 && (
-            <div className="flex gap-2.5 overflow-x-auto pb-2">
-              {product.preview_images.map((img, idx) => (
-                <div key={idx} className="relative h-20 w-32 shrink-0 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
-                  <Image src={img} alt={`Preview ${idx + 1}`} fill className="object-cover" />
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="space-y-6 lg:col-span-7">
+          <ProductImageGallery title={product.title} images={allThumbnails} />
 
           {/* Description Section */}
           <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
