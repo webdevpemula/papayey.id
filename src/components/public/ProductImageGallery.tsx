@@ -54,25 +54,25 @@ export function ProductImageGallery({ title, images }: ProductImageGalleryProps)
           )}
         </div>
 
-        {/* Navigation Arrows (Only shown when > 1 image) */}
+        {/* Navigation Arrows with user's preferred arrow style */}
         {validImages.length > 1 && (
           <>
             <button
               type="button"
               onClick={handlePrev}
               aria-label="Thumbnail Sebelumnya"
-              className="absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-2xl bg-white/85 text-slate-800 shadow-md backdrop-blur-md hover:bg-white active:scale-90 transition-all opacity-80 group-hover:opacity-100 dark:bg-slate-900/85 dark:text-white"
+              className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/90 text-slate-800 shadow-md backdrop-blur-md hover:bg-white hover:scale-105 active:scale-90 transition-all opacity-85 group-hover:opacity-100 dark:bg-slate-900/90 dark:text-white"
             >
-              <FaIcon name="chevron-left" className="text-xs" />
+              <FaIcon name="arrow-left" className="text-sm" />
             </button>
 
             <button
               type="button"
               onClick={handleNext}
               aria-label="Thumbnail Berikutnya"
-              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-2xl bg-white/85 text-slate-800 shadow-md backdrop-blur-md hover:bg-white active:scale-90 transition-all opacity-80 group-hover:opacity-100 dark:bg-slate-900/85 dark:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/90 text-slate-800 shadow-md backdrop-blur-md hover:bg-white hover:scale-105 active:scale-90 transition-all opacity-85 group-hover:opacity-100 dark:bg-slate-900/90 dark:text-white"
             >
-              <FaIcon name="chevron-right" className="text-xs" />
+              <FaIcon name="arrow-right" className="text-sm" />
             </button>
           </>
         )}
