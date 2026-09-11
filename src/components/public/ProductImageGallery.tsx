@@ -27,7 +27,7 @@ export function ProductImageGallery({ title, images }: ProductImageGalleryProps)
   };
 
   return (
-    <div className="space-y-3.5 select-none">
+    <div className="space-y-4 select-none">
       
       {/* Main Active Image Viewport */}
       <div className="group relative aspect-video w-full overflow-hidden rounded-3xl border border-slate-200/80 bg-slate-100 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -37,31 +37,31 @@ export function ProductImageGallery({ title, images }: ProductImageGalleryProps)
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 60vw"
-          className="object-cover transition-all duration-300"
+          className="object-cover transition-transform duration-500 ease-out"
         />
 
         {/* Top Floating Badges */}
-        <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none">
-          <span className="inline-flex items-center gap-1.5 rounded-xl bg-black/60 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white shadow-sm">
+        <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-10">
+          <span className="inline-flex items-center gap-1.5 rounded-xl bg-black/60 backdrop-blur-md px-3 py-1.5 text-[11px] font-bold text-white shadow-sm">
             <FaIcon name="camera" className="text-[10px]" />
             {activeIndex + 1} / {validImages.length} Foto
           </span>
 
           {activeIndex === 0 && (
-            <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-600/90 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-xl bg-indigo-600/95 backdrop-blur-md px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-sm">
               Sampul Utama
             </span>
           )}
         </div>
 
-        {/* Navigation Arrows with user's preferred arrow style */}
+        {/* Navigation Arrows (Arrow Left & Arrow Right with comfortable safe padding) */}
         {validImages.length > 1 && (
           <>
             <button
               type="button"
               onClick={handlePrev}
               aria-label="Thumbnail Sebelumnya"
-              className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/90 text-slate-800 shadow-md backdrop-blur-md hover:bg-white hover:scale-105 active:scale-90 transition-all opacity-85 group-hover:opacity-100 dark:bg-slate-900/90 dark:text-white"
+              className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/95 text-slate-800 shadow-lg shadow-black/15 backdrop-blur-md hover:bg-white hover:scale-105 active:scale-95 transition-all duration-200 opacity-90 hover:opacity-100 dark:bg-slate-900/95 dark:text-white dark:shadow-black/40 z-20"
             >
               <FaIcon name="arrow-left" className="text-sm" />
             </button>
@@ -70,7 +70,7 @@ export function ProductImageGallery({ title, images }: ProductImageGalleryProps)
               type="button"
               onClick={handleNext}
               aria-label="Thumbnail Berikutnya"
-              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/90 text-slate-800 shadow-md backdrop-blur-md hover:bg-white hover:scale-105 active:scale-90 transition-all opacity-85 group-hover:opacity-100 dark:bg-slate-900/90 dark:text-white"
+              className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/95 text-slate-800 shadow-lg shadow-black/15 backdrop-blur-md hover:bg-white hover:scale-105 active:scale-95 transition-all duration-200 opacity-90 hover:opacity-100 dark:bg-slate-900/95 dark:text-white dark:shadow-black/40 z-20"
             >
               <FaIcon name="arrow-right" className="text-sm" />
             </button>
@@ -78,36 +78,38 @@ export function ProductImageGallery({ title, images }: ProductImageGalleryProps)
         )}
       </div>
 
-      {/* Thumbnails Row Strip (1 to 7 thumbnails) */}
+      {/* Thumbnails Row Strip (with generous padding to prevent animation / ring / shadow clipping) */}
       {validImages.length > 1 && (
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pt-0.5 scrollbar-thin">
-          {validImages.map((img, idx) => {
-            const isActive = idx === activeIndex;
-            return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setActiveIndex(idx)}
-                className={`relative aspect-video h-14 sm:h-16 shrink-0 overflow-hidden rounded-xl transition-all duration-200 ${
-                  isActive
-                    ? 'ring-2 ring-indigo-600 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-950 scale-105 shadow-md'
-                    : 'opacity-70 hover:opacity-100 border border-slate-200 dark:border-slate-800'
-                }`}
-                aria-label={`Pilih foto ${idx + 1}`}
-              >
-                <Image
-                  src={img}
-                  alt={`Thumbnail mini ${idx + 1}`}
-                  fill
-                  sizes="120px"
-                  className="object-cover"
-                />
-                <span className="absolute bottom-1 right-1 rounded-md bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white">
-                  {idx + 1}
-                </span>
-              </button>
-            );
-          })}
+        <div className="pt-1 pb-1">
+          <div className="flex items-center gap-3 overflow-x-auto p-2 scrollbar-none sm:scrollbar-thin scroll-smooth">
+            {validImages.map((img, idx) => {
+              const isActive = idx === activeIndex;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveIndex(idx)}
+                  className={`relative aspect-video h-14 sm:h-16 shrink-0 overflow-hidden rounded-xl transition-all duration-200 ${
+                    isActive
+                      ? 'ring-2 ring-indigo-600 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-950 shadow-md scale-100 -translate-y-0.5'
+                      : 'opacity-70 hover:opacity-100 border border-slate-200 dark:border-slate-800 hover:-translate-y-0.5 hover:shadow-sm'
+                  }`}
+                  aria-label={`Pilih foto ${idx + 1}`}
+                >
+                  <Image
+                    src={img}
+                    alt={`Thumbnail mini ${idx + 1}`}
+                    fill
+                    sizes="120px"
+                    className="object-cover"
+                  />
+                  <span className="absolute bottom-1 right-1 rounded-md bg-black/65 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">
+                    {idx + 1}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
