@@ -3,6 +3,9 @@ import crypto from 'crypto';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkMidtransStatus } from '@/lib/midtrans';
 import { sendDownloadEmail } from '@/lib/email';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { maskEmail } from '@/lib/privacy';
+import { logSecurityEvent } from '@/lib/securityAudit';
 
 // In-memory throttling map to prevent hammering Midtrans API during rapid client polling
 const lastExternalCheck = new Map<string, number>();
@@ -13,6 +16,31 @@ export async function GET(
   { params }: { params: Promise<{ code: string }> }
 ) {
   try {
+    // 0. Rate Limiting Protection (Max 30 requests per minute per IP for order status polling)
+    const ip = getClientIp(req);
+    const rateCheck = checkRateLimit(`order_status:${ip}`, 30, 60 * 1000);
+    if (!rateCheck.success) {
+      logSecurityEvent({
+        eventType: 'RATE_LIMIT_EXCEEDED',
+        path: '/api/order/[code]/status',
+        method: 'GET',
+        ip,
+        details: { limit: rateCheck.limit, resetSeconds: rateCheck.resetSeconds },
+      });
+
+      return NextResponse.json(
+        {
+          error: `Terlalu banyak permintaan pengecekan status. Silakan tunggu ${rateCheck.resetSeconds} detik.`,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateCheck.resetSeconds),
+          },
+        }
+      );
+    }
+
     const { code } = await params;
     const supabase = createAdminClient();
 
@@ -128,7 +156,7 @@ export async function GET(
         order_code: order.order_code,
         status: currentStatus,
         price: order.price,
-        buyer_email: order.buyer_email,
+        buyer_email: maskEmail(order.buyer_email),
         buyer_name: order.buyer_name,
         paid_at: paidAt,
         created_at: order.created_at,

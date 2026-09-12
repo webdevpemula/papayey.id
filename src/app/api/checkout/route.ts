@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createChargeTransaction } from '@/lib/midtrans';
 import { mockProducts } from '@/lib/mockData';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { logSecurityEvent } from '@/lib/securityAudit';
 
 const checkoutSchema = z.object({
   productId: z.string().min(1, 'Product ID wajib diisi'),
@@ -15,6 +17,31 @@ const ESSENTIAL_PRODUCT_FIELDS = 'id, title, price, is_active, stock_type, stock
 
 export async function POST(req: NextRequest) {
   try {
+    // 0. Rate Limiting Protection (Max 5 checkout requests per minute per IP)
+    const ip = getClientIp(req);
+    const rateCheck = checkRateLimit(`checkout:${ip}`, 5, 60 * 1000);
+    if (!rateCheck.success) {
+      logSecurityEvent({
+        eventType: 'RATE_LIMIT_EXCEEDED',
+        path: '/api/checkout',
+        method: 'POST',
+        ip,
+        details: { limit: rateCheck.limit, resetSeconds: rateCheck.resetSeconds },
+      });
+
+      return NextResponse.json(
+        {
+          error: `Terlalu banyak permintaan checkout. Silakan coba lagi dalam ${rateCheck.resetSeconds} detik.`,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateCheck.resetSeconds),
+          },
+        }
+      );
+    }
+
     const body = await req.json();
     const validated = checkoutSchema.parse(body);
 

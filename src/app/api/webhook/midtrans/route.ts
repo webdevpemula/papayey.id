@@ -1,8 +1,9 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyMidtransSignature } from '@/lib/midtrans';
 import { sendDownloadEmail } from '@/lib/email';
+import { logSecurityEvent } from '@/lib/securityAudit';
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,7 +31,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (!isSignatureValid) {
-      console.error('🚨 Invalid Midtrans Signature for order:', orderId);
+      logSecurityEvent({
+        eventType: 'WEBHOOK_SIGNATURE_FAILURE',
+        path: '/api/webhook/midtrans',
+        method: 'POST',
+        orderCode: orderId,
+        details: { statusCode, grossAmount },
+      });
       return NextResponse.json({ error: 'Invalid signature key' }, { status: 403 });
     }
 

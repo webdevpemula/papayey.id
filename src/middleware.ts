@@ -1,11 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { logSecurityEvent } from '@/lib/securityAudit';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Only protect /admin routes (except /admin/login)
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+  const isAdminUi = pathname.startsWith('/admin') && pathname !== '/admin/login';
+  const isAdminApi = pathname.startsWith('/api/admin');
+
+  if (isAdminUi || isAdminApi) {
     let supabaseResponse = NextResponse.next({ request });
 
     const supabase = createServerClient(
@@ -33,9 +36,26 @@ export async function middleware(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    // If no user session and not on mock/dev without keys, redirect to login
-    const hasKeys = process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
+    const hasKeys =
+      process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
+
     if (hasKeys && !user) {
+      logSecurityEvent({
+        eventType: 'UNAUTHORIZED_ADMIN_ACCESS',
+        path: pathname,
+        method: request.method,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1',
+        details: { reason: 'No active Supabase user session' },
+      });
+
+      if (isAdminApi) {
+        return NextResponse.json(
+          { error: 'Unauthorized: Autentikasi admin diperlukan.' },
+          { status: 401 }
+        );
+      }
+
       const url = request.nextUrl.clone();
       url.pathname = '/admin/login';
       return NextResponse.redirect(url);
@@ -46,5 +66,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/api/admin/:path*'],
 };

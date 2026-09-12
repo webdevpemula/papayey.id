@@ -1,11 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { logSecurityEvent } from '@/lib/securityAudit';
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
   try {
+    // 0. Rate Limiting (Max 10 download requests per minute per IP)
+    const ip = getClientIp(req);
+    const rateCheck = checkRateLimit(`download:${ip}`, 10, 60 * 1000);
+    if (!rateCheck.success) {
+      logSecurityEvent({
+        eventType: 'RATE_LIMIT_EXCEEDED',
+        path: '/api/download/[token]',
+        method: 'GET',
+        ip,
+        details: { limit: rateCheck.limit, resetSeconds: rateCheck.resetSeconds },
+      });
+
+      return NextResponse.json(
+        {
+          error: `Terlalu banyak permintaan unduhan. Silakan tunggu ${rateCheck.resetSeconds} detik.`,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateCheck.resetSeconds),
+          },
+        }
+      );
+    }
+
     const { token } = await params;
     const supabase = createAdminClient();
 
@@ -17,6 +44,14 @@ export async function GET(
       .single();
 
     if (error || !order) {
+      logSecurityEvent({
+        eventType: 'SUSPICIOUS_DOWNLOAD_ATTEMPT',
+        path: '/api/download/[token]',
+        method: 'GET',
+        ip,
+        details: { tokenPreview: token.substring(0, 8) + '...' },
+      });
+
       return NextResponse.json({ error: 'Token unduhan tidak valid.' }, { status: 404 });
     }
 
